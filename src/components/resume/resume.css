@@ -1,0 +1,589 @@
+/* =========================================================
+   ResumeFlow document styles (used by preview, PDF & print)
+   All sizes are CSS px at 96 dpi → 1:1 with physical page.
+   ========================================================= */
+
+.rf-doc {
+  --rf-accent: #2563eb;
+  --rf-accent-soft: color-mix(in srgb, var(--rf-accent) 10%, white);
+  --rf-accent-line: color-mix(in srgb, var(--rf-accent) 35%, white);
+  --rf-accent-ink: color-mix(in srgb, var(--rf-accent) 85%, black);
+  --rf-link: var(--rf-accent);
+  --rf-name-color: #0f172a;
+  --rf-text: #1e293b;
+  --rf-muted: #64748b;
+  font-family: var(--rf-body-font);
+  font-size: var(--rf-body-size);
+  font-weight: var(--rf-body-weight);
+  line-height: var(--rf-lh);
+  color: var(--rf-text);
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  font-kerning: normal;
+  overflow-wrap: break-word;
+}
+.rf-doc *,
+.rf-doc *::before,
+.rf-doc *::after {
+  box-sizing: border-box;
+}
+.rf-doc p,
+.rf-doc h1,
+.rf-doc h2,
+.rf-doc h3 {
+  margin: 0;
+}
+.rf-page {
+  position: relative;
+  background: #fff;
+  overflow: hidden;
+}
+.rf-block {
+  display: flow-root;
+}
+.rf-col {
+  display: flow-root;
+  min-width: 0;
+}
+
+/* ---------- Rich text ---------- */
+.rf-rich {
+  hyphens: manual;
+}
+.rf-rich ul,
+.rf-rich ol {
+  margin: calc(var(--rf-para-gap) * 0.5) 0 0;
+  padding-left: 1.3em;
+}
+.rf-rich ul {
+  list-style: disc;
+}
+.rf-rich ol {
+  list-style: decimal;
+}
+.rf-rich li {
+  margin-top: calc(var(--rf-para-gap) * 0.5);
+  padding-left: 0.1em;
+}
+.rf-rich li::marker {
+  color: var(--rf-accent);
+}
+.rf-rich > :first-child,
+.rf-rich > :first-child > li:first-child {
+  margin-top: 0;
+}
+.rf-rich p + p,
+.rf-rich div + div {
+  margin-top: var(--rf-para-gap);
+}
+.rf-rich a {
+  color: var(--rf-link);
+  text-decoration: none;
+}
+.rf-justify {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+.rf-item-body {
+  margin-top: var(--rf-para-gap);
+}
+
+/* ---------- Header ---------- */
+.rf-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.rf-header-main {
+  flex: 1;
+  min-width: 0;
+}
+.rf-header[data-align='center'] {
+  flex-direction: column;
+  text-align: center;
+  gap: 12px;
+}
+.rf-header[data-align='center'] .rf-contact {
+  justify-content: center;
+}
+.rf-header[data-align='right'] {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+.rf-header[data-align='right'] .rf-contact {
+  justify-content: flex-end;
+}
+.rf-photo {
+  display: block;
+  flex: none;
+  object-fit: cover;
+}
+.rf-photo.shape-circle {
+  border-radius: 50%;
+}
+.rf-photo.shape-rounded {
+  border-radius: 16%;
+}
+.rf-photo.shape-square {
+  border-radius: 0;
+}
+.rf-name {
+  font-family: var(--rf-heading-font);
+  font-size: var(--rf-name-size);
+  font-weight: var(--rf-heading-weight);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--rf-name-color);
+}
+.rf-title {
+  margin-top: 4px;
+  font-size: 1.15em;
+  font-weight: 500;
+  color: #475569;
+  line-height: 1.3;
+}
+.rf-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 14px;
+  margin: 9px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95em;
+  color: #334155;
+}
+.rf-contact li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+.rf-contact svg {
+  width: 1.05em;
+  height: 1.05em;
+  flex: none;
+  color: var(--rf-accent);
+}
+.rf-contact a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- Section headings ---------- */
+.rf-heading {
+  font-family: var(--rf-heading-font);
+  font-size: var(--rf-heading-size);
+  font-weight: var(--rf-heading-weight);
+  line-height: 1.25;
+  text-align: var(--rf-heading-align);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--rf-accent);
+}
+
+/* ---------- Items ---------- */
+.rf-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+.rf-item-title {
+  font-weight: 600;
+  font-size: 1.07em;
+  color: #0f172a;
+}
+.rf-item-date {
+  color: var(--rf-muted);
+  font-size: 0.95em;
+  white-space: nowrap;
+}
+.rf-item-sub {
+  color: #334155;
+  font-weight: 500;
+}
+.rf-item-loc {
+  color: var(--rf-muted);
+  font-size: 0.95em;
+}
+.rf-meta {
+  color: #475569;
+  font-size: 0.95em;
+}
+.rf-meta b {
+  font-weight: 600;
+  color: #334155;
+}
+.rf-link {
+  color: var(--rf-link);
+  text-decoration: none;
+}
+.rf-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  margin-top: 2px;
+  font-size: 0.95em;
+}
+.rf-side .rf-row {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* ---------- Skills ---------- */
+.rf-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 5px;
+}
+.rf-tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--rf-accent-soft);
+  color: var(--rf-accent-ink);
+  font-size: 0.92em;
+  line-height: 1.6;
+}
+.rf-skill-group-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+.rf-skill-bullets {
+  margin: 0;
+  padding-left: 1.2em;
+  list-style: disc;
+  columns: 3;
+  column-gap: 18px;
+}
+.rf-skill-bullets li::marker {
+  color: var(--rf-accent);
+}
+.rf-side .rf-skill-bullets {
+  columns: 1;
+}
+.rf-inline-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+}
+.rf-inline-list .rf-dot {
+  color: var(--rf-accent);
+}
+.rf-kv {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.rf-kv span:last-child {
+  color: var(--rf-muted);
+}
+
+/* ---------- Certificates / images ---------- */
+.rf-media {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.rf-media.pos-left {
+  flex-direction: row;
+}
+.rf-media.pos-right {
+  flex-direction: row-reverse;
+}
+.rf-media.pos-above {
+  flex-direction: column;
+  gap: 6px;
+}
+.rf-media.pos-below {
+  flex-direction: column-reverse;
+  gap: 6px;
+}
+.rf-media-body {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+.rf-media-img {
+  display: block;
+  flex: none;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+.rf-media-img.size-small {
+  width: 90px;
+}
+.rf-media-img.size-medium {
+  width: 170px;
+}
+.rf-media-img.size-large {
+  width: 280px;
+}
+.rf-media-img.size-full {
+  width: 100%;
+}
+.rf-media.pos-left .rf-media-img.size-full,
+.rf-media.pos-right .rf-media-img.size-full {
+  width: 50%;
+}
+.rf-gallery {
+  display: grid;
+  gap: 10px;
+}
+.rf-gcard {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px;
+  min-width: 0;
+}
+.rf-gcard .rf-media-img {
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+/* ---------- Sidebar ---------- */
+.rf-side-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.rf-side-contact {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.95em;
+}
+.rf-side-contact li {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  overflow-wrap: anywhere;
+}
+.rf-side-contact svg {
+  width: 1.05em;
+  height: 1.05em;
+  flex: none;
+  margin-top: 0.2em;
+  color: var(--rf-accent);
+}
+.rf-side-contact a {
+  color: inherit;
+  text-decoration: none;
+}
+.rf-side-photo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+/* =========================================================
+   Templates
+   ========================================================= */
+
+/* 1 — Blue Minimal */
+.tpl-blue-minimal {
+  --rf-name-color: var(--rf-accent);
+}
+.tpl-blue-minimal .rf-title {
+  color: #334155;
+}
+.tpl-blue-minimal .rf-heading {
+  padding-bottom: 4px;
+  border-bottom: 1.5px solid var(--rf-accent-line);
+}
+
+/* 2 — Modern Professional */
+.tpl-modern-professional .rf-header {
+  background: var(--rf-accent);
+  color: #fff;
+  border-radius: 10px;
+  padding: 20px 22px;
+}
+.tpl-modern-professional .rf-name {
+  color: #fff;
+}
+.tpl-modern-professional .rf-title {
+  color: rgb(255 255 255 / 0.88);
+}
+.tpl-modern-professional .rf-contact,
+.tpl-modern-professional .rf-contact svg {
+  color: #fff;
+}
+.tpl-modern-professional .rf-photo {
+  border: 3px solid rgb(255 255 255 / 0.85);
+}
+.tpl-modern-professional .rf-heading {
+  color: #0f172a;
+  padding-left: 10px;
+  border-left: 4px solid var(--rf-accent);
+  letter-spacing: 0.06em;
+}
+
+/* 3 — Developer */
+.tpl-developer .rf-header {
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #cbd5e1;
+}
+.tpl-developer .rf-title {
+  font-family: var(--rf-heading-font);
+  color: var(--rf-accent);
+  font-size: 1em;
+}
+.tpl-developer .rf-title::before {
+  content: '> ';
+}
+.tpl-developer .rf-heading {
+  color: #0f172a;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.tpl-developer .rf-heading::before {
+  content: '// ';
+  color: var(--rf-accent);
+}
+.tpl-developer .rf-tag {
+  border-radius: 4px;
+  font-family: var(--rf-heading-font);
+  font-size: 0.85em;
+}
+
+/* 4 — Corporate */
+.tpl-corporate .rf-header {
+  padding-bottom: 12px;
+  border-bottom: 3px double var(--rf-accent);
+}
+.tpl-corporate .rf-name {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tpl-corporate .rf-heading {
+  padding: 3px 0;
+  border-top: 1px solid var(--rf-accent-line);
+  border-bottom: 1px solid var(--rf-accent-line);
+  letter-spacing: 0.14em;
+}
+.tpl-corporate .rf-rich li::marker {
+  color: inherit;
+}
+
+/* 5 — Simple ATS */
+.tpl-simple-ats {
+  --rf-accent: #111827;
+  --rf-link: #111827;
+  --rf-text: #111827;
+}
+.tpl-simple-ats .rf-heading {
+  color: #111827;
+  border-bottom: 1px solid #111827;
+  padding-bottom: 2px;
+  letter-spacing: 0.04em;
+}
+.tpl-simple-ats .rf-contact {
+  gap: 2px 0;
+  color: #111827;
+}
+.tpl-simple-ats .rf-contact li + li::before {
+  content: '|';
+  margin: 0 8px;
+  color: #6b7280;
+}
+.tpl-simple-ats .rf-tag {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+.tpl-simple-ats .rf-rich li::marker {
+  color: inherit;
+}
+
+/* 6 — Two Column Modern */
+.tpl-two-column-modern .rf-side-bg {
+  background: var(--rf-accent-soft);
+}
+.tpl-two-column-modern .rf-heading {
+  color: #0f172a;
+  letter-spacing: 0.1em;
+}
+.tpl-two-column-modern .rf-heading::after {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 3px;
+  margin-top: 5px;
+  border-radius: 2px;
+  background: var(--rf-accent);
+}
+.tpl-two-column-modern[data-halign='center'] .rf-heading::after {
+  margin-inline: auto;
+}
+.tpl-two-column-modern[data-halign='right'] .rf-heading::after {
+  margin-left: auto;
+}
+.tpl-two-column-modern .rf-title {
+  color: var(--rf-accent);
+}
+.tpl-two-column-modern .rf-side .rf-tag {
+  background: #fff;
+}
+
+/* 7 — Academic */
+.tpl-academic .rf-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #111827;
+}
+.tpl-academic .rf-name {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.tpl-academic .rf-heading {
+  color: #111827;
+  text-transform: none;
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+  font-size: calc(var(--rf-heading-size) * 1.1);
+  border-bottom: 0.75px solid #9ca3af;
+  padding-bottom: 2px;
+}
+.tpl-academic .rf-item-title {
+  font-weight: 600;
+}
+.tpl-academic .rf-rich li::marker {
+  color: inherit;
+}
+
+/* 8 — Fresh Graduate */
+.tpl-fresh-graduate {
+  --rf-name-color: #0f172a;
+}
+.tpl-fresh-graduate .rf-title {
+  color: var(--rf-accent);
+  font-weight: 600;
+}
+.tpl-fresh-graduate .rf-photo {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--rf-accent-line);
+}
+.tpl-fresh-graduate .rf-heading {
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+.tpl-fresh-graduate .rf-heading-text {
+  display: inline-block;
+  padding: 3px 14px;
+  border-radius: 999px;
+  background: var(--rf-accent-soft);
+  color: var(--rf-accent-ink);
+}
+
+/* ATS mode: strip all decoration */
+.rf-ats .rf-contact svg,
+.rf-ats .rf-side-contact svg {
+  display: none;
+}
