@@ -1,32 +1,36 @@
-# React + TypeScript + Vite
+# ResumeFlow
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+ResumeFlow is a privacy-focused résumé builder with local browser storage, live preview, image support, and PDF export.
 
-Currently, two official plugins are available:
+## Local development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Use `vercel dev` when testing the secure bug-report API locally.
+
+## Production build
+
+```bash
+npm run build
+```
+
+## Vercel deployment
+
+The frontend deploys as a Vite site and `api/bug-report.ts` deploys as a Vercel Function. Security headers are defined in `vercel.json`.
+
+Before deploying, create an email API key and a verified sending address with Resend. Add these values under **Vercel → Project Settings → Environment Variables**:
+
+- `RESEND_API_KEY` — mark this as sensitive.
+- `BUG_REPORT_TO_EMAIL` — the private inbox that receives reports; mark this as sensitive.
+- `BUG_REPORT_FROM_EMAIL` — a sender on your verified domain, such as `ResumeFlow Bugs <bugs@example.com>`.
+
+Apply the variables to Production and Preview, then redeploy. Never put real values in `.env.example` or commit a local `.env` file.
+
+For additional abuse protection, enable Vercel Bot Protection. If your plan supports custom firewall rate limits, limit `POST /api/bug-report`; the function also applies validation, a honeypot, submission timing checks, same-origin checks, and a small per-instance rate limit.
+
+## Privacy model
+
+Résumé content and uploaded résumé images stay in the user's browser. Only information deliberately entered in the bug-report form, optional diagnostics, and an optional screenshot are submitted to the bug-report API.

@@ -10,7 +10,8 @@ import type {
   SectionType,
   SkillGroup,
 } from '../types/resume';
-import { marginsFromPreset } from './constants';
+import { PAGE_SIZES, PHOTO_SIZE, TEMPLATES, clampPhotoSize, marginsFromPreset } from './constants';
+import { sanitizeUntrustedResumeData } from './security';
 
 export const uid = () =>
   (typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -18,7 +19,7 @@ export const uid = () =>
     : Math.random().toString(36).slice(2) + Date.now().toString(36)
   ).slice(0, 12);
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 type GenericField = 'title' | 'subtitle' | 'location' | 'date' | 'endDate' | 'url' | 'description';
 
@@ -157,15 +158,15 @@ export const SECTION_META: Record<SectionType, SectionMeta> = {
     addLabel: 'Add Volunteer Work',
   },
   organizations: {
-    label: 'Organizations',
-    standardTitle: 'Organizations',
-    description: 'Clubs, societies and memberships.',
+    label: 'Organizations & Affiliations',
+    standardTitle: 'Organizations & Affiliations',
+    description: 'Leadership roles, clubs, societies and professional affiliations.',
     optional: true,
     duplicable: true,
     defaultColumn: 'main',
-    fields: { title: 'Organization', subtitle: 'Position / Role', date: 'Start', endDate: 'End', description: 'Description' },
-    emptyText: 'No organizations added yet.',
-    addLabel: 'Add Organization',
+    fields: { title: 'Position / Role', subtitle: 'Organization / Affiliation', date: 'Start', endDate: 'End', description: 'Description' },
+    emptyText: 'No organizations or affiliations added yet.',
+    addLabel: 'Add Organization or Affiliation',
   },
   seminars: {
     label: 'Seminars',
@@ -410,7 +411,7 @@ export function createBlankResume(title = 'Untitled Resume'): Resume {
       website: '',
       profileImage: null,
       photoShape: 'circle',
-      photoSize: 96,
+      photoSize: PHOTO_SIZE.default,
     },
     sections: [
       createSection('summary'),
@@ -430,20 +431,109 @@ export function createBlankResume(title = 'Untitled Resume'): Resume {
 
 const ul = (items: string[]) => `<ul>${items.map((i) => `<li>${i}</li>`).join('')}</ul>`;
 
-export function createSampleResume(): Resume {
-  const r = createBlankResume('General Resume');
+const sampleProfileImage = (src: string) => ({
+  original: src,
+  src,
+  naturalWidth: 1254,
+  naturalHeight: 1254,
+  crop: { aspect: 1, zoom: 1, cx: 0.5, cy: 0.5 },
+});
+
+function createMayaSample(): Resume {
+  const r = createBlankResume('UX Designer Sample');
+  r.id = 'sample-maya-santos';
   r.personal = {
     ...r.personal,
-    fullName: 'Joseph Dano',
-    professionalTitle: 'Computer Engineering Student · Software Developer',
-    email: 'joseph.dano@email.com',
-    phone: '+63 912 345 6789',
-    location: 'Cebu City, Philippines',
-    linkedIn: 'linkedin.com/in/josephdano',
-    github: 'github.com/josephdano',
-    portfolio: 'josephdano.dev',
+    fullName: 'Maya Santos',
+    professionalTitle: 'Product & UX Designer',
+    email: 'maya.santos@example.com',
+    location: 'Makati City, Philippines',
+    linkedIn: 'linkedin.com/in/maya-santos-sample',
+    portfolio: 'mayasantos.example.com',
+    profileImage: sampleProfileImage('/sample-profile-maya.png'),
+    photoShape: 'rounded',
   };
-  const [summary, experience, projects, education, skills, certs] = r.sections as [
+  r.design.template = 'two-column-modern';
+  r.design.accentColor = '#7C3AED';
+  r.layout.columns = 2;
+
+  const [summary, experience, projects, education, skills] = r.sections as [
+    Extract<Section, { type: 'summary' }>,
+    Extract<Section, { type: 'experience' }>,
+    Extract<Section, { type: 'projects' }>,
+    Extract<Section, { type: 'education' }>,
+    Extract<Section, { type: 'skills' }>,
+  ];
+  summary.content =
+    '<p>Product designer who turns complex workflows into clear, accessible experiences. Skilled in user research, prototyping, design systems, and cross-functional collaboration.</p>';
+  experience.items = [
+    newExperience({
+      jobTitle: 'UX Designer',
+      company: 'Northstar Digital Studio',
+      location: 'Makati City',
+      startDate: '2023',
+      endDate: 'Present',
+      current: true,
+      accomplishments: ul([
+        'Redesigned a customer onboarding flow and improved completion by 24%.',
+        'Built a reusable component library with product and engineering teams.',
+        'Planned usability studies and translated findings into prioritized improvements.',
+      ]),
+    }),
+    newExperience({
+      jobTitle: 'Junior UI Designer',
+      company: 'Pixel Harbor Creative',
+      location: 'Remote',
+      startDate: '2021',
+      endDate: '2023',
+      accomplishments: ul([
+        'Created responsive interfaces for web and mobile products.',
+        'Prepared developer-ready specifications and accessibility annotations.',
+      ]),
+    }),
+  ];
+  projects.items = [
+    newProject({
+      name: 'Community Care Portal',
+      role: 'Lead Product Designer',
+      technologies: 'Figma, FigJam, Maze',
+      description: 'Designed a mobile-first service portal for appointment booking and case updates.',
+    }),
+  ];
+  education.items = [
+    newEducation({
+      degree: 'Bachelor of Fine Arts',
+      program: 'Information Design',
+      school: 'Sample Metropolitan College',
+      startYear: '2017',
+      endYear: '2021',
+    }),
+  ];
+  skills.groups = [
+    newSkillGroup({ name: 'Design', skills: ['User Research', 'Interaction Design', 'Prototyping', 'Design Systems'] }),
+    newSkillGroup({ name: 'Tools', skills: ['Figma', 'FigJam', 'Maze', 'Adobe Creative Cloud'] }),
+  ];
+  r.sections = r.sections.filter((section) => section.type !== 'certifications');
+  return r;
+}
+
+function createAdrianSample(): Resume {
+  const r = createBlankResume('Software Engineer Sample');
+  r.id = 'sample-adrian-reyes';
+  r.personal = {
+    ...r.personal,
+    fullName: 'Adrian Reyes',
+    professionalTitle: 'Full-Stack Software Engineer',
+    email: 'adrian.reyes@example.com',
+    location: 'Cebu City, Philippines',
+    github: 'github.com/adrian-reyes-sample',
+    website: 'adrianreyes.example.com',
+    profileImage: sampleProfileImage('/sample-profile-adrian.png'),
+  };
+  r.design.template = 'developer';
+  r.design.accentColor = '#0F766E';
+
+  const [summary, experience, projects, education, skills, certifications] = r.sections as [
     Extract<Section, { type: 'summary' }>,
     Extract<Section, { type: 'experience' }>,
     Extract<Section, { type: 'projects' }>,
@@ -452,96 +542,95 @@ export function createSampleResume(): Resume {
     Extract<Section, { type: 'certifications' }>,
   ];
   summary.content =
-    'Computer Engineering student specializing in software development, embedded systems, cloud technologies, and system development. Passionate about building reliable, user-focused applications and turning hardware and software ideas into working products.';
+    '<p>Full-stack engineer focused on reliable web applications, practical automation, and maintainable APIs. Comfortable owning features from technical planning through deployment.</p>';
   experience.items = [
     newExperience({
-      jobTitle: 'Software Developer Intern',
-      company: 'Nimbus Tech Solutions',
+      jobTitle: 'Software Engineer',
+      company: 'Harborline Systems',
       location: 'Cebu City',
-      startDate: '2026-03',
-      endDate: '',
+      startDate: '2022',
+      endDate: 'Present',
       current: true,
-      description: 'Develop internal tools and customer-facing features for a cloud-based inventory platform.',
       accomplishments: ul([
-        'Built a React + TypeScript dashboard used by <b>40+ staff</b>, reducing report preparation time by 35%.',
-        'Implemented REST endpoints and automated tests, increasing API test coverage from 48% to 82%.',
-        'Collaborated in two-week sprints with designers and senior engineers.',
+        'Delivered internal workflow tools that reduced manual processing time by 35%.',
+        'Designed REST APIs and background jobs for high-volume business operations.',
+        'Improved release confidence with automated tests and deployment checks.',
       ]),
     }),
     newExperience({
-      jobTitle: 'IT Support Assistant',
-      company: 'University Computer Center',
-      location: 'Cebu City',
-      startDate: '2025-06',
-      endDate: '2026-02',
-      description: ul([
-        'Maintained 120+ laboratory workstations and campus network equipment.',
-        'Resolved an average of 25 support tickets per week with a 96% satisfaction rating.',
+      jobTitle: 'Web Development Intern',
+      company: 'Brightbyte Labs',
+      location: 'Remote',
+      startDate: '2021',
+      endDate: '2022',
+      accomplishments: ul([
+        'Implemented accessible React components and responsive dashboards.',
+        'Resolved defects across frontend, API, and database layers.',
       ]),
     }),
   ];
   projects.items = [
     newProject({
-      name: 'RFID Smart Attendance System',
-      role: 'Lead Developer',
-      technologies: 'ESP32, RFID, Firebase, React',
-      githubUrl: 'github.com/josephdano/rfid-attendance',
-      startDate: '2025-08',
-      endDate: '2025-12',
-      description:
-        'Designed an IoT attendance system that logs RFID taps to a real-time cloud database and displays analytics on a web dashboard for 300+ students.',
+      name: 'Inventory Forecasting Dashboard',
+      role: 'Full-Stack Developer',
+      technologies: 'TypeScript, React, Node.js, PostgreSQL',
+      description: 'Built a planning dashboard with role-based access, reporting, and automated alerts.',
     }),
     newProject({
-      name: 'ResumeFlow',
-      role: 'Full-stack Developer',
-      technologies: 'React, TypeScript, Tailwind CSS',
-      url: 'resumeflow.app',
-      startDate: '2026-09',
-      description: 'A professional online resume builder with live preview, templates and print-accurate PDF export.',
+      name: 'Open Source Form Toolkit',
+      technologies: 'React, Vitest, Storybook',
+      description: 'Created reusable accessible form components with validation and test coverage.',
     }),
   ];
   education.items = [
     newEducation({
       degree: 'Bachelor of Science',
-      program: 'Computer Engineering',
-      school: 'University of San Carlos',
-      location: 'Cebu City',
-      startYear: '2023',
-      endYear: '2027',
-      description: "Dean's Lister (2023–2026) · Member, Institute of Computer Engineers of the Philippines",
+      program: 'Computer Science',
+      school: 'Sample Institute of Technology',
+      startYear: '2017',
+      endYear: '2021',
     }),
   ];
   skills.groups = [
-    newSkillGroup({ name: 'Programming', skills: ['Python', 'JavaScript', 'TypeScript', 'C/C++'] }),
-    newSkillGroup({ name: 'Web Development', skills: ['React', 'Next.js', 'HTML', 'CSS', 'Tailwind CSS'] }),
-    newSkillGroup({ name: 'Hardware', skills: ['ESP32', 'Arduino', 'RFID', 'Raspberry Pi'] }),
-    newSkillGroup({ name: 'Cloud & Tools', skills: ['AWS', 'Firebase', 'Git', 'Docker'] }),
+    newSkillGroup({ name: 'Languages', skills: ['TypeScript', 'JavaScript', 'Python', 'SQL'] }),
+    newSkillGroup({ name: 'Web', skills: ['React', 'Node.js', 'REST APIs', 'HTML', 'CSS'] }),
+    newSkillGroup({ name: 'Data & Delivery', skills: ['PostgreSQL', 'Git', 'Docker', 'CI/CD'] }),
   ];
-  certs.items = [
+  certifications.items = [
     newCertification({
-      name: 'AWS Certified Cloud Practitioner',
-      organization: 'Amazon Web Services',
-      issueDate: '2026-06',
-      credentialId: 'AWS-CCP-0193',
-      credentialUrl: 'https://aws.amazon.com/verification',
+      name: 'Cloud Fundamentals',
+      certificationName: 'Cloud Fundamentals',
+      organization: 'Example Learning Academy',
+      issueDate: '2024',
     }),
   ];
-  const langs = createSection('languages');
-  if ('items' in langs) {
-    (langs.items as GenericItem[]).push(
-      newGeneric({ title: 'English', subtitle: 'Fluent' }),
-      newGeneric({ title: 'Filipino', subtitle: 'Native' }),
-      newGeneric({ title: 'Cebuano', subtitle: 'Native' }),
-    );
-  }
-  r.sections.push(langs);
   return r;
+}
+
+/** Fictional examples shown to new users. No real contact details are used. */
+export function createSampleResumes(): Resume[] {
+  return [createMayaSample(), createAdrianSample()];
+}
+
+/** Identifies the old personal demo by its bundled content, without retaining its contact details. */
+export function isLegacyBundledResume(resume: Resume): boolean {
+  const hasLegacyRole = resume.sections.some(
+    (section) =>
+      section.type === 'experience' &&
+      section.items.some((item) => item.company === 'Lifewood Data Technology'),
+  );
+  const hasLegacyProject = resume.sections.some(
+    (section) =>
+      section.type === 'projects' &&
+      section.items.some((item) => item.name.includes('LifePlan')),
+  );
+  return hasLegacyRole && hasLegacyProject;
 }
 
 /** Fill missing fields from imported / older data so the app never crashes. */
 export function normalizeResume(input: unknown): Resume {
   const blank = createBlankResume();
-  const r = (input ?? {}) as Partial<Resume>;
+  const r = sanitizeUntrustedResumeData(input ?? {}) as Partial<Resume>;
   const out: Resume = {
     ...blank,
     ...r,
@@ -555,15 +644,65 @@ export function normalizeResume(input: unknown): Resume {
     },
     sections: Array.isArray(r.sections) ? r.sections : blank.sections,
   };
+  const finite = (value: unknown, fallback: number, min: number, max: number) =>
+    typeof value === 'number' && Number.isFinite(value)
+      ? Math.min(max, Math.max(min, value))
+      : fallback;
+  const allowed = <T extends string>(value: unknown, options: readonly T[], fallback: T): T =>
+    typeof value === 'string' && options.includes(value as T) ? (value as T) : fallback;
+
+  out.personal.photoSize = clampPhotoSize(out.personal.photoSize);
+  out.personal.photoShape = allowed(out.personal.photoShape, ['circle', 'rounded', 'square', 'none'], blank.personal.photoShape);
+  out.design.template = allowed(out.design.template, TEMPLATES.map((template) => template.id), blank.design.template);
+  out.design.atsMode = typeof out.design.atsMode === 'boolean' ? out.design.atsMode : blank.design.atsMode;
+  out.fonts.nameSize = finite(out.fonts.nameSize, blank.fonts.nameSize, 14, 72);
+  out.fonts.headingSize = finite(out.fonts.headingSize, blank.fonts.headingSize, 8, 32);
+  out.fonts.headingWeight = finite(out.fonts.headingWeight, blank.fonts.headingWeight, 100, 900);
+  out.fonts.bodySize = finite(out.fonts.bodySize, blank.fonts.bodySize, 7, 24);
+  out.fonts.bodyWeight = finite(out.fonts.bodyWeight, blank.fonts.bodyWeight, 100, 900);
+  out.fonts.lineHeight = finite(out.fonts.lineHeight, blank.fonts.lineHeight, 0.9, 3);
+  out.layout.pageSize = allowed(out.layout.pageSize, PAGE_SIZES.map((size) => size.id), blank.layout.pageSize);
+  out.layout.marginPreset = allowed(out.layout.marginPreset, ['xnarrow', 'narrow', 'normal', 'wide', 'custom'], blank.layout.marginPreset);
+  out.layout.marginUnit = allowed(out.layout.marginUnit, ['mm', 'cm', 'in'], blank.layout.marginUnit);
+  out.layout.spacingPreset = allowed(out.layout.spacingPreset, ['compact', 'normal', 'relaxed', 'custom'], blank.layout.spacingPreset);
+  out.layout.columns = out.layout.columns === 2 ? 2 : 1;
+  out.layout.headingAlignment = allowed(out.layout.headingAlignment, ['left', 'center', 'right'], blank.layout.headingAlignment);
+  out.layout.bodyAlignment = allowed(out.layout.bodyAlignment, ['left', 'center', 'right', 'justify'], blank.layout.bodyAlignment);
+  out.layout.density = allowed(out.layout.density, ['compact', 'normal', 'spacious'], blank.layout.density);
+  out.layout.sectionGap = allowed(out.layout.sectionGap, ['small', 'medium', 'large'], blank.layout.sectionGap);
+  out.layout.margins.top = finite(out.layout.margins.top, blank.layout.margins.top, 0, 60);
+  out.layout.margins.bottom = finite(out.layout.margins.bottom, blank.layout.margins.bottom, 0, 60);
+  out.layout.margins.left = finite(out.layout.margins.left, blank.layout.margins.left, 0, 60);
+  out.layout.margins.right = finite(out.layout.margins.right, blank.layout.margins.right, 0, 60);
+  out.pageCount = Math.round(finite(out.pageCount, 1, 1, 100));
   out.sections = out.sections
-    .filter((s) => s && typeof s === 'object' && 'type' in s && s.type in SECTION_META)
+    .filter(
+      (s) =>
+        s &&
+        typeof s === 'object' &&
+        'type' in s &&
+        typeof s.type === 'string' &&
+        Object.prototype.hasOwnProperty.call(SECTION_META, s.type),
+    )
+    .slice(0, 40)
     .map((s) => {
       const def = createSection(s.type);
       const merged = { ...def, ...s, id: s.id || uid() } as Section;
-      if ('items' in merged && !Array.isArray(merged.items)) (merged as { items: unknown[] }).items = [];
-      if (merged.type === 'skills' && !Array.isArray(merged.groups)) merged.groups = [];
+      if ('items' in merged) {
+        (merged as { items: unknown[] }).items = Array.isArray(merged.items)
+          ? merged.items.filter((item) => item && typeof item === 'object').slice(0, 100)
+          : [];
+      }
+      if (merged.type === 'skills') {
+        merged.groups = Array.isArray(merged.groups)
+          ? merged.groups.filter((group) => group && typeof group === 'object').slice(0, 50)
+          : [];
+      }
       return merged;
     });
+  if (out.sections.length === 0) out.sections = blank.sections;
+  if (!/^#[0-9a-f]{6}$/i.test(out.design.accentColor)) out.design.accentColor = blank.design.accentColor;
   out.version = SCHEMA_VERSION;
+
   return out;
 }

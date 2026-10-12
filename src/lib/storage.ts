@@ -1,4 +1,4 @@
-import { createStore, del, get, set, values } from 'idb-keyval';
+import { clear as clearStore, createStore, del, get, set, values } from 'idb-keyval';
 import type { Resume } from '../types/resume';
 import { normalizeResume } from './defaults';
 
@@ -22,6 +22,14 @@ export async function deleteResume(id: string) {
 export async function listResumes(): Promise<Resume[]> {
   const all = await values<Resume>(resumeStore);
   return all.map(normalizeResume).sort((a, b) => b.updatedAt - a.updatedAt);
+}
+
+export async function clearAllResumeData() {
+  await clearStore(resumeStore);
+  for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+    const key = localStorage.key(index);
+    if (key?.startsWith('resumeflow:')) localStorage.removeItem(key);
+  }
 }
 
 /** Small UI config lives in localStorage. */

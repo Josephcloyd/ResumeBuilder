@@ -3,6 +3,28 @@ import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_BYTES } from './constants';
 
 export class ImageError extends Error {}
 
+export async function validateImageFile(file: File): Promise<void> {
+  if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+    throw new ImageError('Unsupported format. Please use PNG, JPG, JPEG or WEBP.');
+  }
+  if (file.size <= 0 || file.size > MAX_UPLOAD_BYTES) {
+    throw new ImageError('Image must be smaller than 5 MB.');
+  }
+
+  const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  const isPng = bytes.length >= 8 && [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a].every((byte, i) => bytes[i] === byte);
+  const isJpeg = bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  const isWebp = bytes.length >= 12 && String.fromCharCode(...bytes.slice(0, 4)) === 'RIFF' && String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP';
+  const signatureMatches =
+    (file.type === 'image/png' && isPng) ||
+    ((file.type === 'image/jpeg' || file.type === 'image/jpg') && isJpeg) ||
+    (file.type === 'image/webp' && isWebp);
+
+  if (!signatureMatches) {
+    throw new ImageError('The file contents do not match the selected image format.');
+  }
+}
+
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -35,14 +57,12 @@ function hasAlpha(ctx: CanvasRenderingContext2D, w: number, h: number) {
  * `maxDim` and re-encoded so they look sharp in print without bloating PDFs.
  */
 export async function processUpload(file: File, maxDim = 2000): Promise<ImageAsset> {
-  if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-    throw new ImageError('Unsupported format. Please use PNG, JPG, JPEG or WEBP.');
-  }
-  if (file.size > MAX_UPLOAD_BYTES) {
-    throw new ImageError('Image is larger than 5 MB. Please choose a smaller file.');
-  }
+  await validateImageFile(file);
   const dataUrl = await readFile(file);
   const img = await loadImage(dataUrl);
+  if (!img.naturalWidth || !img.naturalHeight || img.naturalWidth * img.naturalHeight > 40_000_000) {
+    throw new ImageError('Image dimensions are too large. Please choose a smaller image.');
+  }
   const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
   const w = Math.round(img.naturalWidth * scale);
   const h = Math.round(img.naturalHeight * scale);

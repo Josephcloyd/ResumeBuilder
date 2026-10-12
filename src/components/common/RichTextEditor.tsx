@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import type { Align } from '../../types/resume';
+import { sanitizeHtml } from '../../lib/format';
 
 interface RichTextEditorProps {
   value: string;
@@ -28,8 +29,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   // Sync incoming value to DOM
   useEffect(() => {
     if (editorRef.current && !isInternalChange.current) {
-      if (editorRef.current.innerHTML !== (value || '')) {
-        editorRef.current.innerHTML = value || '';
+      const safeValue = sanitizeHtml(value || '');
+      if (editorRef.current.innerHTML !== safeValue) {
+        editorRef.current.innerHTML = safeValue;
       }
     }
     isInternalChange.current = false;
@@ -38,9 +40,26 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const handleInput = () => {
     if (editorRef.current) {
       isInternalChange.current = true;
-      const html = editorRef.current.innerHTML;
+      const rawHtml = editorRef.current.innerHTML;
+      const html = sanitizeHtml(rawHtml);
+      if (rawHtml !== html) {
+        editorRef.current.innerHTML = html;
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(editorRef.current);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
       onChange(html === '<br>' ? '' : html);
     }
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const text = event.clipboardData.getData('text/plain').slice(0, 50_000);
+    document.execCommand('insertText', false, text);
+    handleInput();
   };
 
   const exec = (cmd: string, val: string = '') => {
@@ -157,6 +176,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         ref={editorRef}
         contentEditable
         onInput={handleInput}
+        onPaste={handlePaste}
         data-placeholder={placeholder}
         className="rte-content p-3 text-sm text-ink outline-none leading-relaxed overflow-y-auto"
         style={{ minHeight: `${minHeight}px`, textAlign: align }}

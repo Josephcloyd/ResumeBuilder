@@ -39,6 +39,9 @@ export function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: ['b', 'strong', 'i', 'em', 'u', 'ul', 'ol', 'li', 'p', 'br', 'div', 'span', 'a'],
     ALLOWED_ATTR: ['href', 'target', 'rel'],
+    ALLOW_DATA_ATTR: false,
+    ALLOW_ARIA_ATTR: false,
+    SANITIZE_NAMED_PROPS: true,
   });
 }
 
@@ -51,10 +54,10 @@ export function isHtmlEmpty(html: string | undefined | null): boolean {
 export function htmlToText(html: string): string {
   if (!html) return '';
   const d = document.createElement('div');
-  d.innerHTML = html;
+  d.innerHTML = sanitizeHtml(html);
   return (d.textContent || '').replace(/\s+/g, ' ').trim();
 }
 
 export function safeFileName(name: string) {
-  return (name || 'Resume').trim().replace(/[^\w\-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') || 'Resume';
+  return (name || 'Resume').trim().replace(/[^\w-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') || 'Resume';
 }

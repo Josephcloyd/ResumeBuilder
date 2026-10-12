@@ -22,6 +22,7 @@
   font-kerning: normal;
   overflow-wrap: break-word;
 }
+.rf-doc,
 .rf-doc *,
 .rf-doc *::before,
 .rf-doc *::after {
@@ -37,6 +38,7 @@
   position: relative;
   background: #fff;
   overflow: hidden;
+  outline: 1px solid rgb(226 232 240 / 0.8);
 }
 .rf-block {
   display: flow-root;
@@ -105,6 +107,9 @@
   text-align: center;
   gap: 12px;
 }
+.rf-header[data-align='center'] .rf-header-main {
+  width: 100%;
+}
 .rf-header[data-align='center'] .rf-contact {
   justify-content: center;
 }
@@ -118,6 +123,7 @@
 .rf-photo {
   display: block;
   flex: none;
+  max-width: 100%;
   object-fit: cover;
 }
 .rf-photo.shape-circle {
@@ -159,6 +165,8 @@
   align-items: center;
   gap: 5px;
   min-width: 0;
+  max-width: 100%;
+  flex: 0 0 auto;
 }
 .rf-contact svg {
   width: 1.05em;
@@ -169,6 +177,12 @@
 .rf-contact a {
   color: inherit;
   text-decoration: none;
+}
+.rf-contact li > a,
+.rf-contact li > span {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 /* ---------- Section headings ---------- */
@@ -192,22 +206,35 @@
   gap: 0 12px;
 }
 .rf-item-title {
+  flex: 1 1 0;
+  min-width: 0;
   font-weight: 600;
   font-size: 1.07em;
   color: #0f172a;
 }
 .rf-item-date {
+  flex: 0 0 auto;
   color: var(--rf-muted);
   font-size: 0.95em;
   white-space: nowrap;
 }
 .rf-item-sub {
+  flex: 1 1 0;
+  min-width: 0;
   color: #334155;
   font-weight: 500;
 }
 .rf-item-loc {
+  flex: 0 0 auto;
   color: var(--rf-muted);
   font-size: 0.95em;
+}
+
+/* Export staging removes preview-only decoration without changing layout. */
+.rf-export-page {
+  outline: none !important;
+  box-shadow: none !important;
+  transition: none !important;
 }
 .rf-meta {
   color: #475569;
@@ -367,6 +394,11 @@
   gap: 7px;
   overflow-wrap: anywhere;
 }
+.rf-side-contact li span,
+.rf-side-contact li a {
+  min-width: 0;
+  word-break: break-word;
+}
 .rf-side-contact svg {
   width: 1.05em;
   height: 1.05em;
@@ -505,8 +537,12 @@
 }
 
 /* 6 — Two Column Modern */
+.tpl-two-column-modern .rf-col.rf-side,
 .tpl-two-column-modern .rf-side-bg {
   background: var(--rf-accent-soft);
+}
+.tpl-two-column-modern .rf-side-photo .rf-photo {
+  box-shadow: 0 0 0 3px #fff, 0 3px 10px rgb(0 0 0 / 0.1);
 }
 .tpl-two-column-modern .rf-heading {
   color: #0f172a;

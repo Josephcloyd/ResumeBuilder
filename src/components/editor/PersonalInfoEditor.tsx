@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useResumeStore } from '../../store/resumeStore';
 import type { PhotoShape } from '../../types/resume';
+import { PHOTO_SIZE, clampPhotoSize } from '../../lib/constants';
 import { ImageUploadModal } from '../common/ImageUploadModal';
 
 export const PersonalInfoEditor: React.FC = () => {
@@ -90,6 +91,57 @@ export const PersonalInfoEditor: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {personal.profileImage && personal.photoShape !== 'none' && (
+          <div className="pt-2 border-t border-slate-200/80 space-y-2.5">
+            <div className="flex items-center justify-between gap-3">
+              <label htmlFor="profile-photo-size" className="text-xs font-medium text-slate-700">
+                Photo size
+              </label>
+              <span className="min-w-14 text-center text-xs font-semibold text-brand bg-blue-50 border border-blue-100 rounded-md px-2 py-1">
+                {clampPhotoSize(personal.photoSize)} px
+              </span>
+            </div>
+            <input
+              id="profile-photo-size"
+              type="range"
+              min={PHOTO_SIZE.min}
+              max={PHOTO_SIZE.max}
+              step={PHOTO_SIZE.step}
+              value={clampPhotoSize(personal.photoSize)}
+              onChange={(e) => setPersonal('photoSize', clampPhotoSize(e.target.value))}
+              className="w-full accent-brand h-1.5 bg-slate-200 rounded-lg cursor-pointer"
+              aria-label="Profile photo size"
+            />
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[10px] text-muted">Smaller</span>
+              <div className="flex items-center gap-1.5">
+                {[
+                  { label: 'Small', value: 72 },
+                  { label: 'Medium', value: 96 },
+                  { label: 'Large', value: 128 },
+                ].map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => setPersonal('photoSize', preset.value)}
+                    className={`px-2 py-0.5 text-[10px] rounded-md border transition-colors ${
+                      clampPhotoSize(personal.photoSize) === preset.value
+                        ? 'border-brand bg-blue-50 text-brand font-semibold'
+                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+              <span className="text-[10px] text-muted">Larger</span>
+            </div>
+            <p className="text-[10px] leading-4 text-muted">
+              Limited to a layout-safe range so preview and PDF pages stay consistent.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Main Info Form */}
@@ -100,7 +152,7 @@ export const PersonalInfoEditor: React.FC = () => {
             type="text"
             value={personal.fullName}
             onChange={(e) => setPersonal('fullName', e.target.value)}
-            placeholder="e.g. Joseph Dano"
+            placeholder="e.g. Alex Rivera"
             className="input font-medium"
           />
         </div>
@@ -122,7 +174,7 @@ export const PersonalInfoEditor: React.FC = () => {
             type="email"
             value={personal.email}
             onChange={(e) => setPersonal('email', e.target.value)}
-            placeholder="e.g. joseph.dano@email.com"
+            placeholder="e.g. alex.rivera@example.com"
             className="input"
           />
         </div>
@@ -155,7 +207,7 @@ export const PersonalInfoEditor: React.FC = () => {
             type="text"
             value={personal.linkedIn}
             onChange={(e) => setPersonal('linkedIn', e.target.value)}
-            placeholder="e.g. linkedin.com/in/josephdano"
+            placeholder="e.g. linkedin.com/in/alexrivera"
             className="input"
           />
         </div>
@@ -166,7 +218,7 @@ export const PersonalInfoEditor: React.FC = () => {
             type="text"
             value={personal.github}
             onChange={(e) => setPersonal('github', e.target.value)}
-            placeholder="e.g. github.com/josephdano"
+            placeholder="e.g. github.com/alexrivera"
             className="input"
           />
         </div>
@@ -177,7 +229,7 @@ export const PersonalInfoEditor: React.FC = () => {
             type="text"
             value={personal.portfolio}
             onChange={(e) => setPersonal('portfolio', e.target.value)}
-            placeholder="e.g. josephdano.dev"
+            placeholder="e.g. alexrivera.dev"
             className="input"
           />
         </div>
@@ -188,7 +240,7 @@ export const PersonalInfoEditor: React.FC = () => {
             type="text"
             value={personal.website}
             onChange={(e) => setPersonal('website', e.target.value)}
-            placeholder="e.g. blog.josephdano.dev"
+            placeholder="e.g. blog.alexrivera.dev"
             className="input"
           />
         </div>

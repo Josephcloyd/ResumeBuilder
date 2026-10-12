@@ -51,7 +51,7 @@ const savedZoom = Number(localStorage.getItem('resumeflow:zoom')) || 0;
 const savedMode = (localStorage.getItem('resumeflow:zoomMode') as ZoomMode) || 'fitWidth';
 
 export const useUI = create<UIState>((set, get) => ({
-  view: 'builder',
+  view: 'resumes',
   editorTab: 'content',
   mobilePane: 'editor',
   zoom: savedZoom || 80,

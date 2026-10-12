@@ -50,12 +50,12 @@ export const ResumePreview: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-slate-100/80 relative overflow-hidden select-none">
       {/* Zoom and Preview Toolbar */}
-      <div className="h-11 border-b border-line bg-white/90 backdrop-blur-xs px-4 flex items-center justify-between z-20 shadow-xs">
+      <div className="min-h-14 border-b border-line bg-white/90 backdrop-blur-xs px-5 flex items-center justify-between gap-4 z-20 shadow-xs">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-700 tracking-wide">
+          <span className="text-sm font-semibold text-slate-800 tracking-tight">
             Live Preview
           </span>
-          <span className="text-[11px] text-muted bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+          <span className="hidden xl:inline text-[11px] text-muted bg-slate-100 px-2 py-0.5 rounded border border-slate-200 whitespace-nowrap">
             {geom.size.label} · {geom.size.dims}
           </span>
         </div>

@@ -202,6 +202,20 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
     }
   }, [resume, built, geom, effective, onPageCountChange]);
 
+  const isTwoCol = effective.columns === 2;
+  const isSideBg = isTwoCol && effective.sideBg;
+  const colGap = 24;
+
+  const sidebarWidth = useMemo(
+    () => (isSideBg ? Math.round(geom.width * 0.32) : Math.round(geom.contentWidth * 0.32)),
+    [isSideBg, geom.width, geom.contentWidth]
+  );
+
+  const gridTemplateColumns = useMemo(
+    () => (isTwoCol ? (effective.sidebar === 'left' ? `${sidebarWidth}px 1fr` : `1fr ${sidebarWidth}px`) : undefined),
+    [isTwoCol, effective.sidebar, sidebarWidth]
+  );
+
   const style = useMemo(() => docStyle(resume, effective), [resume, effective]);
   const cls = useMemo(() => docClassName(effective), [effective]);
 
@@ -218,16 +232,31 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
           left: -99999,
           top: 0,
           width: geom.width,
-          padding: `${geom.margins.top}px ${geom.margins.right}px ${geom.margins.bottom}px ${geom.margins.left}px`,
+          padding: isSideBg
+            ? 0
+            : `${geom.margins.top}px ${geom.margins.right}px ${geom.margins.bottom}px ${geom.margins.left}px`,
           visibility: 'hidden',
           pointerEvents: 'none',
           zIndex: -1,
         }}
       >
         {built.header && <div data-measurer-header>{built.header}</div>}
-        <div style={{ display: effective.columns === 2 ? 'grid' : 'block', gridTemplateColumns: effective.columns === 2 ? (effective.sidebar === 'left' ? '32% 1fr' : '1fr 32%') : undefined, gap: 24 }}>
-          {effective.columns === 2 && effective.sidebar === 'left' && (
-            <div>
+        <div
+          style={{
+            display: isTwoCol ? 'grid' : 'block',
+            gridTemplateColumns,
+            gap: isSideBg ? 0 : colGap,
+          }}
+        >
+          {isTwoCol && effective.sidebar === 'left' && (
+            <div
+              className="rf-col rf-side"
+              style={{
+                paddingLeft: isSideBg ? 24 : 0,
+                paddingRight: isSideBg ? 24 : 0,
+                boxSizing: 'border-box',
+              }}
+            >
               {built.blocks
                 .filter((b) => b.col === 'side')
                 .map((b) => (
@@ -237,7 +266,14 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
                 ))}
             </div>
           )}
-          <div>
+          <div
+            className="rf-col rf-main"
+            style={{
+              paddingLeft: isSideBg ? (effective.sidebar === 'left' ? 28 : geom.margins.left) : 0,
+              paddingRight: isSideBg ? (effective.sidebar === 'left' ? geom.margins.right : 28) : 0,
+              boxSizing: 'border-box',
+            }}
+          >
             {built.blocks
               .filter((b) => b.col === 'main')
               .map((b) => (
@@ -246,8 +282,15 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
                 </div>
               ))}
           </div>
-          {effective.columns === 2 && effective.sidebar === 'right' && (
-            <div>
+          {isTwoCol && effective.sidebar === 'right' && (
+            <div
+              className="rf-col rf-side"
+              style={{
+                paddingLeft: isSideBg ? 24 : 0,
+                paddingRight: isSideBg ? 24 : 0,
+                boxSizing: 'border-box',
+              }}
+            >
               {built.blocks
                 .filter((b) => b.col === 'side')
                 .map((b) => (
@@ -272,33 +315,27 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
 
             {/* Document sheet */}
             <div
-              className={`${cls} rf-page shadow-page border border-slate-200/80 bg-white transition-all`}
+              className={`${cls} rf-page shadow-page bg-white transition-all`}
               data-page-index={idx}
               data-page-size={resume.layout.pageSize}
               style={{
                 ...style,
                 width: `${geom.width}px`,
                 height: `${geom.height}px`,
-                padding: `${geom.margins.top}px ${geom.margins.right}px ${geom.margins.bottom}px ${geom.margins.left}px`,
+                padding: isSideBg
+                  ? 0
+                  : `${geom.margins.top}px ${geom.margins.right}px ${geom.margins.bottom}px ${geom.margins.left}px`,
               }}
             >
-              {/* Optional sidebar background for two-column template */}
-              {effective.sideBg && (
-                <div
-                  className="rf-side-bg"
-                  style={{
-                    left: effective.sidebar === 'left' ? 0 : 'auto',
-                    right: effective.sidebar === 'right' ? 0 : 'auto',
-                    width: `calc(32% + ${effective.sidebar === 'left' ? geom.margins.left : geom.margins.right}px)`,
-                  }}
-                />
+              {/* Page header (if any on this page) */}
+              {page.header && (
+                <div style={{ marginBottom: effective.sectionGap }}>
+                  {page.header}
+                </div>
               )}
 
-              {/* Page header (if any on this page) */}
-              {page.header && <div className="mb-4">{page.header}</div>}
-
               {/* Page content */}
-              {effective.columns === 1 ? (
+              {!isTwoCol ? (
                 <div className="rf-main-col">
                   {page.mainBlocks.map((b, bIdx) => (
                     <div key={b.key} className="rf-block" style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
@@ -311,21 +348,45 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
                   className="rf-columns-grid relative z-10"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: effective.sidebar === 'left' ? '30% 1fr' : '1fr 30%',
-                    gap: '24px',
-                    height: '100%',
+                    gridTemplateColumns,
+                    gap: isSideBg ? 0 : `${colGap}px`,
+                    width: '100%',
+                    height: isSideBg ? '100%' : 'auto',
+                    alignItems: 'start',
                   }}
                 >
                   {effective.sidebar === 'left' ? (
                     <>
-                      <div className="rf-col rf-side">
+                      <div
+                        className="rf-col rf-side"
+                        style={{
+                          background: isSideBg ? 'var(--rf-accent-soft)' : undefined,
+                          paddingTop: isSideBg ? geom.margins.top : 0,
+                          paddingBottom: isSideBg ? geom.margins.bottom : 0,
+                          paddingLeft: isSideBg ? 24 : 0,
+                          paddingRight: isSideBg ? 24 : 0,
+                          boxSizing: 'border-box',
+                          height: isSideBg ? '100%' : 'auto',
+                        }}
+                      >
                         {page.sideBlocks.map((b, bIdx) => (
                           <div key={b.key} className="rf-block" style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
                             {b.el}
                           </div>
                         ))}
                       </div>
-                      <div className="rf-col rf-main">
+                      <div
+                        className="rf-col rf-main"
+                        style={{
+                          background: isSideBg ? '#ffffff' : undefined,
+                          paddingTop: isSideBg ? geom.margins.top : 0,
+                          paddingBottom: isSideBg ? geom.margins.bottom : 0,
+                          paddingLeft: isSideBg ? 28 : 0,
+                          paddingRight: isSideBg ? geom.margins.right : 0,
+                          boxSizing: 'border-box',
+                          height: isSideBg ? '100%' : 'auto',
+                        }}
+                      >
                         {page.mainBlocks.map((b, bIdx) => (
                           <div key={b.key} className="rf-block" style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
                             {b.el}
@@ -335,14 +396,36 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
                     </>
                   ) : (
                     <>
-                      <div className="rf-col rf-main">
+                      <div
+                        className="rf-col rf-main"
+                        style={{
+                          background: isSideBg ? '#ffffff' : undefined,
+                          paddingTop: isSideBg ? geom.margins.top : 0,
+                          paddingBottom: isSideBg ? geom.margins.bottom : 0,
+                          paddingLeft: isSideBg ? geom.margins.left : 0,
+                          paddingRight: isSideBg ? 28 : 0,
+                          boxSizing: 'border-box',
+                          height: isSideBg ? '100%' : 'auto',
+                        }}
+                      >
                         {page.mainBlocks.map((b, bIdx) => (
                           <div key={b.key} className="rf-block" style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
                             {b.el}
                           </div>
                         ))}
                       </div>
-                      <div className="rf-col rf-side">
+                      <div
+                        className="rf-col rf-side"
+                        style={{
+                          background: isSideBg ? 'var(--rf-accent-soft)' : undefined,
+                          paddingTop: isSideBg ? geom.margins.top : 0,
+                          paddingBottom: isSideBg ? geom.margins.bottom : 0,
+                          paddingLeft: isSideBg ? 24 : 0,
+                          paddingRight: isSideBg ? 24 : 0,
+                          boxSizing: 'border-box',
+                          height: isSideBg ? '100%' : 'auto',
+                        }}
+                      >
                         {page.sideBlocks.map((b, bIdx) => (
                           <div key={b.key} className="rf-block" style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
                             {b.el}

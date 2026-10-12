@@ -5,6 +5,7 @@ import { pageSizeById } from '../../lib/constants';
 import { downloadBlob } from '../../lib/storage';
 import { formatLongDate, safeFileName } from '../../lib/format';
 import { exportResumeToPDF } from '../../lib/pdf';
+import { validateResumeImportData, validateResumeImportFile } from '../../lib/security';
 
 export const MyResumesView: React.FC = () => {
   const {
@@ -16,6 +17,7 @@ export const MyResumesView: React.FC = () => {
     renameInLibrary,
     newResume,
     importResume,
+    clearAllLocalData,
   } = useResumeStore();
   const { setView, ask, toast } = useUI();
 
@@ -69,22 +71,21 @@ export const MyResumesView: React.FC = () => {
     toast('Resume data exported as JSON', 'success');
   };
 
-  const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportJSON = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        const parsed = JSON.parse(reader.result as string);
-        await importResume(parsed);
-        setView('builder');
-        toast('Resume imported successfully!', 'success');
-      } catch (err) {
-        toast('Invalid JSON resume file format', 'error');
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
+    try {
+      validateResumeImportFile(file);
+      const parsed: unknown = JSON.parse(await file.text());
+      validateResumeImportData(parsed);
+      await importResume(parsed);
+      setView('builder');
+      toast('Resume imported successfully!', 'success');
+    } catch (error) {
+      toast(error instanceof Error ? error.message : 'Invalid ResumeFlow JSON file.', 'error');
+    } finally {
+      e.target.value = '';
+    }
   };
 
   const handleQuickDownload = async (r: typeof resume) => {
@@ -100,6 +101,20 @@ export const MyResumesView: React.FC = () => {
       setView('builder');
       toast('Opened resume. Please click Download PDF.', 'info');
     }
+  };
+
+  const handleClearLocalData = async () => {
+    const confirmed = await ask({
+      title: 'Delete your local résumé data?',
+      message: 'This permanently removes your saved résumés and uploaded images from this browser. The two built-in sample résumés will remain available. Export anything you want to keep first.',
+      confirmLabel: 'Delete My Data',
+      danger: true,
+    });
+    if (!confirmed) return;
+
+    await clearAllLocalData();
+    setView('resumes');
+    toast('Your local résumé data was deleted. The samples were kept.', 'info');
   };
 
   const startRename = (id: string, currentTitle: string) => {
@@ -122,7 +137,7 @@ export const MyResumesView: React.FC = () => {
         <div>
           <h2 className="text-2xl font-bold text-ink tracking-tight">My Resumes</h2>
           <p className="text-sm text-muted mt-1">
-            Manage, duplicate, and export your saved resumes
+            Start with a sample or create and manage your own resumes
           </p>
         </div>
 
@@ -214,7 +229,14 @@ export const MyResumesView: React.FC = () => {
               >
                 {/* Header */}
                 <div className="p-5 pb-3">
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start justify-between gap-3">
+                    {item.personal.profileImage && (
+                      <img
+                        src={item.personal.profileImage.src}
+                        alt=""
+                        className="size-11 shrink-0 rounded-xl border border-slate-200 object-cover shadow-sm"
+                      />
+                    )}
                     {isEditing ? (
                       <div className="flex items-center gap-1.5 flex-1">
                         <input
@@ -237,6 +259,11 @@ export const MyResumesView: React.FC = () => {
                       <div className="min-w-0">
                         <h4 className="font-bold text-sm text-ink truncate flex items-center gap-1.5">
                           <span>{item.title || 'Untitled Resume'}</span>
+                          {item.id.startsWith('sample-') && (
+                            <span className="text-[10px] bg-violet-100 text-violet-700 font-semibold px-1.5 py-0.5 rounded">
+                              Sample
+                            </span>
+                          )}
                           {isCurrent && (
                             <span className="text-[10px] bg-blue-100 text-brand font-semibold px-1.5 py-0.5 rounded">
                               Active
@@ -338,6 +365,25 @@ export const MyResumesView: React.FC = () => {
           })}
         </div>
       )}
+
+      <section className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-soft sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+            <svg className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-ink">Privacy and local data</h3>
+            <p className="mt-1 max-w-xl text-xs leading-relaxed text-muted">
+              Your résumés are stored only in this browser. On a shared device, export your data and remove it when you are finished.
+            </p>
+          </div>
+        </div>
+        <button type="button" onClick={handleClearLocalData} className="btn btn-sm shrink-0 border border-red-200 bg-white text-red-600 hover:bg-red-50">
+          Delete my local data
+        </button>
+      </section>
     </div>
   );
 };

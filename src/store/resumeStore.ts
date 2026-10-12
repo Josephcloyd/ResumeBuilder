@@ -4,8 +4,9 @@ import type { Resume, Section, SectionType, TemplateId } from '../types/resume';
 import {
   cloneSection,
   createBlankResume,
-  createSampleResume,
+  createSampleResumes,
   createSection,
+  isLegacyBundledResume,
   normalizeResume,
   uid,
 } from '../lib/defaults';
@@ -50,6 +51,7 @@ interface ResumeState {
   duplicateInLibrary: (id: string) => Promise<void>;
   renameInLibrary: (id: string, title: string) => Promise<void>;
   deleteFromLibrary: (id: string) => Promise<void>;
+  clearAllLocalData: () => Promise<void>;
 }
 
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -89,18 +91,25 @@ export const useResumeStore = create<ResumeState>((set, get) => {
     init: async () => {
       let r: Resume | null = null;
       try {
-        const id = storage.getCurrentId();
-        if (id) r = await storage.loadResume(id);
-        if (!r) {
-          const all = await storage.listResumes();
-          r = all[0] ?? null;
+        const currentId = storage.getCurrentId();
+        let all = await storage.listResumes();
+        const obsoleteSamples = all.filter(isLegacyBundledResume);
+        if (obsoleteSamples.length) {
+          await Promise.all(obsoleteSamples.map((resume) => storage.deleteResume(resume.id)));
+          all = all.filter((resume) => !isLegacyBundledResume(resume));
         }
+        if (!all.length) {
+          all = createSampleResumes();
+          await Promise.all(all.map(storage.saveResume));
+        }
+        r = all.find((resume) => resume.id === currentId) ?? all[0] ?? null;
       } catch (e) {
         console.error('Failed to load saved resumes', e);
       }
       if (!r) {
-        r = createSampleResume();
-        await storage.saveResume(r).catch(() => undefined);
+        const samples = createSampleResumes();
+        await Promise.all(samples.map((sample) => storage.saveResume(sample).catch(() => undefined)));
+        r = samples[0];
       }
       storage.setCurrentId(r.id);
       set({ resume: r, loaded: true, saveStatus: 'saved', past: [], future: [] });
@@ -261,6 +270,23 @@ export const useResumeStore = create<ResumeState>((set, get) => {
         await get().saveNow();
       }
       await get().refreshLibrary();
+    },
+    clearAllLocalData: async () => {
+      clearTimeout(saveTimer);
+      await storage.clearAllResumeData();
+      const samples = createSampleResumes();
+      await Promise.all(samples.map(storage.saveResume));
+      const activeSample = samples[0];
+      storage.setCurrentId(activeSample.id);
+      set({
+        resume: activeSample,
+        library: samples,
+        past: [],
+        future: [],
+        saveStatus: 'saved',
+        lastEditKey: '',
+        lastEditAt: 0,
+      });
     },
   };
 });

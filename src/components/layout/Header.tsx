@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useResumeStore } from '../../store/resumeStore';
 import { useUI } from '../../store/uiStore';
+import { DonationModal } from '../common/DonationModal';
 
 export const Header: React.FC = () => {
+  const [donationOpen, setDonationOpen] = useState(false);
   const { saveStatus, saveNow, undo, redo, past, future, newResume } = useResumeStore();
   const {
     view,
@@ -13,6 +15,7 @@ export const Header: React.FC = () => {
     ask,
     toast,
   } = useUI();
+  const closeDonation = useCallback(() => setDonationOpen(false), []);
 
   // Keyboard shortcuts for Undo and Redo
   useEffect(() => {
@@ -202,6 +205,19 @@ export const Header: React.FC = () => {
         </button>
 
         <button
+          type="button"
+          onClick={() => setDonationOpen(true)}
+          className="btn btn-sm border border-amber-200 bg-amber-50 text-amber-800 shadow-soft hover:border-amber-300 hover:bg-amber-100"
+          title="Support ResumeFlow through GCash"
+          aria-label="Donate through GCash"
+        >
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 21s-7-4.35-9.33-8.24C.83 9.69 2.1 5.5 5.74 4.42 7.93 3.77 10.2 4.6 12 6.45c1.8-1.85 4.07-2.68 6.26-2.03 3.64 1.08 4.91 5.27 3.07 8.34C19 16.65 12 21 12 21Z"/>
+          </svg>
+          <span className="hidden xl:inline">Donate</span>
+        </button>
+
+        <button
           onClick={() => setExportOpen(true)}
           className="btn btn-primary btn-sm shadow-soft"
           title="Export resume as PDF"
@@ -212,6 +228,8 @@ export const Header: React.FC = () => {
           <span>Download PDF</span>
         </button>
       </div>
+
+      <DonationModal open={donationOpen} onClose={closeDonation} />
     </header>
   );
 };

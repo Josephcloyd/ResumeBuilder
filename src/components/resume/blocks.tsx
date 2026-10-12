@@ -11,7 +11,7 @@ import type {
   Section,
   TemplateId,
 } from '../../types/resume';
-import { DENSITY, SECTION_GAP_PX, fontStack, templateById } from '../../lib/constants';
+import { DENSITY, SECTION_GAP_PX, clampPhotoSize, fontStack, templateById } from '../../lib/constants';
 import { SECTION_META, isGenericType } from '../../lib/defaults';
 import { dateRange, displayUrl, ensureUrl, formatMonth, isHtmlEmpty, sanitizeHtml } from '../../lib/format';
 import { ContactIcon, type ContactKind } from './contactIcons';
@@ -130,7 +130,7 @@ function contactItems(r: Resume) {
 }
 
 function Photo({ r, img }: { r: Resume; img: ImageAsset }) {
-  const s = r.personal.photoSize;
+  const s = clampPhotoSize(r.personal.photoSize);
   return (
     <img
       className={`rf-photo shape-${r.personal.photoShape}`}

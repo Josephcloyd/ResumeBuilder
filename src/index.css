@@ -147,29 +147,44 @@
 }
 
 /* ---------- Printing (vector PDF via browser) ---------- */
-.rf-print-root {
-  display: none;
-}
 @media print {
-  body.rf-printing > *:not(.rf-print-root) {
+  /* Hide application chrome and navigation */
+  header,
+  nav,
+  button,
+  .preview-toolbar,
+  [data-no-pdf],
+  .rf-page-wrapper > div:first-child {
     display: none !important;
   }
-  body.rf-printing {
+
+  body {
     background: #fff !important;
   }
-  body.rf-printing .rf-print-root {
-    display: block;
+
+  main {
+    overflow: visible !important;
   }
-  .rf-print-root .rf-page {
+
+  /* Reset container margins for clean print output */
+  .rf-pages-container {
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+
+  .rf-page {
     box-shadow: none !important;
+    border: none !important;
     margin: 0 !important;
     break-after: page;
     page-break-after: always;
   }
-  .rf-print-root .rf-page:last-child {
+
+  .rf-page:last-child {
     break-after: auto;
     page-break-after: auto;
   }
+
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;

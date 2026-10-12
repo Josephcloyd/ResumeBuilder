@@ -105,6 +105,16 @@ export const ACCENT_PRESETS = [
 
 export const ZOOM_PRESETS = [50, 60, 70, 80, 90, 100, 110, 120, 150];
 
+/** Safe profile-photo bounds that fit every resume template and export page. */
+export const PHOTO_SIZE = { min: 48, max: 180, step: 4, default: 96 } as const;
+
+export const clampPhotoSize = (value: unknown): number => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return PHOTO_SIZE.default;
+  const bounded = Math.min(PHOTO_SIZE.max, Math.max(PHOTO_SIZE.min, parsed));
+  return PHOTO_SIZE.min + Math.round((bounded - PHOTO_SIZE.min) / PHOTO_SIZE.step) * PHOTO_SIZE.step;
+};
+
 export interface TemplateDef {
   id: TemplateId;
   name: string;

@@ -27,17 +27,19 @@ export const ResumeEditor: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-white border-r border-line overflow-hidden">
       {/* Tab Bar */}
-      <div className="flex items-center px-4 pt-3 border-b border-line bg-slate-50/70 select-none">
+      <div className="p-3 border-b border-line bg-slate-50/80 select-none">
+        <div className="grid grid-cols-3 gap-1 rounded-xl border border-slate-200 bg-slate-100/80 p-1">
         <button
           type="button"
           onClick={() => setEditorTab('content')}
-          className={`pb-2.5 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+          aria-selected={editorTab === 'content'}
+          className={`min-h-10 rounded-lg px-2 text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
             editorTab === 'content'
-              ? 'border-brand text-brand'
-              : 'border-transparent text-muted hover:text-ink'
+              ? 'bg-white text-brand shadow-soft'
+              : 'text-muted hover:bg-white/60 hover:text-ink'
           }`}
         >
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
             <polyline points="14 2 14 8 20 8"/>
           </svg>
@@ -47,52 +49,55 @@ export const ResumeEditor: React.FC = () => {
         <button
           type="button"
           onClick={() => setEditorTab('design')}
-          className={`pb-2.5 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+          aria-selected={editorTab === 'design'}
+          className={`min-h-10 rounded-lg px-2 text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
             editorTab === 'design'
-              ? 'border-brand text-brand'
-              : 'border-transparent text-muted hover:text-ink'
+              ? 'bg-white text-brand shadow-soft'
+              : 'text-muted hover:bg-white/60 hover:text-ink'
           }`}
         >
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
             <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
           </svg>
-          Design & Layout
+          Design
         </button>
 
         <button
           type="button"
           onClick={() => setEditorTab('score')}
-          className={`pb-2.5 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+          aria-selected={editorTab === 'score'}
+          className={`min-h-10 rounded-lg px-2 text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
             editorTab === 'score'
-              ? 'border-brand text-brand'
-              : 'border-transparent text-muted hover:text-ink'
+              ? 'bg-white text-brand shadow-soft'
+              : 'text-muted hover:bg-white/60 hover:text-ink'
           }`}
         >
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 12h20"/>
           </svg>
-          Quality Check
+          Review
         </button>
+        </div>
       </div>
 
       {/* Editor Content Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3.5 scroll-thin">
+      <div className="flex-1 overflow-y-auto p-5 space-y-4 scroll-thin">
         {editorTab === 'design' && <DesignSettings />}
         {editorTab === 'score' && <ResumeScore />}
 
         {editorTab === 'content' && (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {/* Section 1: Personal Info (Always first) */}
             <div className="border border-line rounded-xl bg-white shadow-soft overflow-hidden transition-all">
               <button
                 type="button"
                 onClick={() => toggleSection('personal')}
-                className="w-full px-4 py-3 bg-slate-50/70 hover:bg-slate-100/70 flex items-center justify-between select-none cursor-pointer transition-colors"
+                className="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-slate-100/70 flex items-center justify-between select-none cursor-pointer transition-colors"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="size-6 rounded-md bg-blue-100 text-brand flex items-center justify-center">
-                    <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="size-8 rounded-lg bg-blue-100 text-brand flex items-center justify-center">
+                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
                   </div>
@@ -133,10 +138,10 @@ export const ResumeEditor: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => toggleSection(sec.id)}
-                    className="w-full px-4 py-3 bg-slate-50/70 hover:bg-slate-100/70 flex items-center justify-between select-none cursor-pointer transition-colors"
+                    className="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-slate-100/70 flex items-center justify-between select-none cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="size-6 rounded-md bg-blue-50 text-brand flex items-center justify-center shrink-0">
+                      <div className="size-8 rounded-lg bg-blue-50 text-brand flex items-center justify-center shrink-0">
                         {sec.type === 'summary' && (
                           <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="21" x2="3" y1="6" y2="6"/><line x1="15" x2="3" y1="12" y2="12"/><line x1="17" x2="3" y1="18" y2="18"/>
