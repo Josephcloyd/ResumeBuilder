@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useResumeStore } from '../../store/resumeStore';
 import { useUI } from '../../store/uiStore';
 import { DonationModal } from '../common/DonationModal';
+import { BrandLogo } from '../common/BrandLogo';
 
 export const Header: React.FC = () => {
   const [donationOpen, setDonationOpen] = useState(false);
@@ -61,18 +62,10 @@ export const Header: React.FC = () => {
       <div className="flex items-center gap-3 sm:gap-6">
         <div
           onClick={() => setView('builder')}
-          className="flex items-center gap-2 cursor-pointer group"
+          className="cursor-pointer transition-transform hover:scale-[1.02]"
+          title="ResumeFlow by GetLaunchPH"
         >
-          <div className="size-8 rounded-lg bg-brand flex items-center justify-center text-white shadow-soft transition-transform group-hover:scale-105">
-            <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <path d="m9 15 2 2 4-4"/>
-            </svg>
-          </div>
-          <span className="font-bold text-ink text-base tracking-tight hidden xs:inline-block">
-            Resume<span className="text-brand">Flow</span>
-          </span>
+          <BrandLogo />
         </div>
 
         {/* View Nav Tabs */}

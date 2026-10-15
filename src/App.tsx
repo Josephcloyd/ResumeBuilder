@@ -9,6 +9,7 @@ import { TemplatesView } from './components/views/TemplatesView';
 import { ExportModal } from './components/pdf/ExportModal';
 import { ConfirmModal, ToastContainer } from './components/common/ConfirmModal';
 import { BugReportBubble } from './components/common/BugReportBubble';
+import { BrandMark } from './components/common/BrandLogo';
 
 export const App: React.FC = () => {
   const { init, loaded } = useResumeStore();
@@ -61,10 +62,11 @@ export const App: React.FC = () => {
   if (!loaded) {
     return (
       <div className="h-screen w-screen flex flex-col items-center justify-center bg-slate-50 gap-3">
-        <div className="size-10 border-3 border-brand border-t-transparent rounded-full animate-spin" />
+        <BrandMark className="size-14 animate-pulse" />
         <p className="text-xs font-semibold text-slate-600 tracking-wide">
           Loading ResumeFlow...
         </p>
+        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted">by GetLaunchPH</p>
       </div>
     );
   }

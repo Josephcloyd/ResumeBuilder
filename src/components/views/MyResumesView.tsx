@@ -195,7 +195,7 @@ export const MyResumesView: React.FC = () => {
       {/* Resume Cards Grid */}
       {filtered.length === 0 ? (
         <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-white shadow-soft">
-          <div className="size-14 rounded-full bg-blue-50 text-brand flex items-center justify-center mx-auto mb-3">
+          <div className="size-14 rounded-full bg-brand-50 text-brand flex items-center justify-center mx-auto mb-3">
             <svg className="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
               <polyline points="14 2 14 8 20 8"/>
@@ -265,7 +265,7 @@ export const MyResumesView: React.FC = () => {
                             </span>
                           )}
                           {isCurrent && (
-                            <span className="text-[10px] bg-blue-100 text-brand font-semibold px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] bg-brand-100 text-brand font-semibold px-1.5 py-0.5 rounded">
                               Active
                             </span>
                           )}

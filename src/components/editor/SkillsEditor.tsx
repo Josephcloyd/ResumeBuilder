@@ -146,13 +146,13 @@ export const SkillsEditor: React.FC<SkillsEditorProps> = ({ sectionId }) => {
                 {grp.skills.map((sk, skIdx) => (
                   <span
                     key={skIdx}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-blue-50 text-brand-dark rounded-full text-xs font-medium border border-blue-200/60"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-brand-50 text-brand-dark rounded-full text-xs font-medium border border-brand-200/60"
                   >
                     <span>{sk}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveSkill(grp.id, skIdx)}
-                      className="text-blue-400 hover:text-red-500 transition-colors"
+                      className="text-brand-400 hover:text-red-500 transition-colors"
                       title="Remove skill"
                     >
                       &times;

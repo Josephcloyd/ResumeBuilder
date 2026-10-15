@@ -117,7 +117,7 @@ export const ResumePreview: React.FC = () => {
               }
             }}
             className={`px-2 py-1 text-[11px] rounded font-medium transition-all ${
-              zoomMode === 'fitWidth' ? 'bg-blue-100 text-brand font-semibold' : 'text-slate-600 hover:bg-slate-100'
+              zoomMode === 'fitWidth' ? 'bg-brand-100 text-brand font-semibold' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             Fit Width
@@ -133,7 +133,7 @@ export const ResumePreview: React.FC = () => {
               }
             }}
             className={`px-2 py-1 text-[11px] rounded font-medium transition-all ${
-              zoomMode === 'fitPage' ? 'bg-blue-100 text-brand font-semibold' : 'text-slate-600 hover:bg-slate-100'
+              zoomMode === 'fitPage' ? 'bg-brand-100 text-brand font-semibold' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             Fit Page

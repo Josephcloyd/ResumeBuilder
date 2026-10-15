@@ -98,7 +98,7 @@ export const PersonalInfoEditor: React.FC = () => {
               <label htmlFor="profile-photo-size" className="text-xs font-medium text-slate-700">
                 Photo size
               </label>
-              <span className="min-w-14 text-center text-xs font-semibold text-brand bg-blue-50 border border-blue-100 rounded-md px-2 py-1">
+              <span className="min-w-14 text-center text-xs font-semibold text-brand bg-brand-50 border border-brand-100 rounded-md px-2 py-1">
                 {clampPhotoSize(personal.photoSize)} px
               </span>
             </div>
@@ -127,7 +127,7 @@ export const PersonalInfoEditor: React.FC = () => {
                     onClick={() => setPersonal('photoSize', preset.value)}
                     className={`px-2 py-0.5 text-[10px] rounded-md border transition-colors ${
                       clampPhotoSize(personal.photoSize) === preset.value
-                        ? 'border-brand bg-blue-50 text-brand font-semibold'
+                        ? 'border-brand bg-brand-50 text-brand font-semibold'
                         : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
                     }`}
                   >

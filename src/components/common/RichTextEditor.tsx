@@ -130,7 +130,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onClick={() => onAlignChange('left')}
-              className={`size-7 rounded flex items-center justify-center transition-colors ${align === 'left' ? 'bg-blue-100 text-brand font-semibold' : 'hover:bg-slate-200/80 hover:text-ink'}`}
+              className={`size-7 rounded flex items-center justify-center transition-colors ${align === 'left' ? 'bg-brand-100 text-brand font-semibold' : 'hover:bg-slate-200/80 hover:text-ink'}`}
               title="Align Left"
             >
               <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -140,7 +140,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onClick={() => onAlignChange('center')}
-              className={`size-7 rounded flex items-center justify-center transition-colors ${align === 'center' ? 'bg-blue-100 text-brand font-semibold' : 'hover:bg-slate-200/80 hover:text-ink'}`}
+              className={`size-7 rounded flex items-center justify-center transition-colors ${align === 'center' ? 'bg-brand-100 text-brand font-semibold' : 'hover:bg-slate-200/80 hover:text-ink'}`}
               title="Align Center"
             >
               <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -150,7 +150,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onClick={() => onAlignChange('right')}
-              className={`size-7 rounded flex items-center justify-center transition-colors ${align === 'right' ? 'bg-blue-100 text-brand font-semibold' : 'hover:bg-slate-200/80 hover:text-ink'}`}
+              className={`size-7 rounded flex items-center justify-center transition-colors ${align === 'right' ? 'bg-brand-100 text-brand font-semibold' : 'hover:bg-slate-200/80 hover:text-ink'}`}
               title="Align Right"
             >
               <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -160,7 +160,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onClick={() => onAlignChange('justify')}
-              className={`size-7 rounded flex items-center justify-center transition-colors ${align === 'justify' ? 'bg-blue-100 text-brand font-semibold' : 'hover:bg-slate-200/80 hover:text-ink'}`}
+              className={`size-7 rounded flex items-center justify-center transition-colors ${align === 'justify' ? 'bg-brand-100 text-brand font-semibold' : 'hover:bg-slate-200/80 hover:text-ink'}`}
               title="Justify"
             >
               <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

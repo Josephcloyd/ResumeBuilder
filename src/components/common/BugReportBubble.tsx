@@ -263,7 +263,7 @@ export const BugReportBubble: React.FC = () => {
                   className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-5 text-center transition-colors ${
                     isDraggingScreenshot
                       ? 'border-brand bg-brand-50'
-                      : 'border-slate-200 bg-slate-50/70 hover:border-blue-300 hover:bg-brand-50/50'
+                      : 'border-slate-200 bg-slate-50/70 hover:border-brand-300 hover:bg-brand-50/50'
                   }`}
                 >
                   <div className="mb-2 flex size-9 items-center justify-center rounded-lg bg-white text-brand shadow-soft">
@@ -297,7 +297,7 @@ export const BugReportBubble: React.FC = () => {
                 type="checkbox"
                 checked={includeDiagnostics}
                 onChange={(event) => setIncludeDiagnostics(event.target.checked)}
-                className="mt-0.5 size-4 rounded border-slate-300 accent-blue-600"
+                className="mt-0.5 size-4 rounded border-slate-300 accent-brand-600"
               />
               <span>
                 <span className="block font-semibold text-slate-700">Include technical details</span>

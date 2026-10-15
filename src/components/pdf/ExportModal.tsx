@@ -50,9 +50,9 @@ export const ExportModal: React.FC = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
       <div className="card w-full max-w-md bg-white shadow-pop overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-line bg-gradient-to-r from-blue-50/50 to-white">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-line bg-gradient-to-r from-brand-50/50 to-white">
           <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-lg bg-blue-100 text-brand flex items-center justify-center font-bold">
+            <div className="size-9 rounded-lg bg-brand-100 text-brand flex items-center justify-center font-bold">
               <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
               </svg>
@@ -110,7 +110,7 @@ export const ExportModal: React.FC = () => {
 
           {/* Progress message */}
           {isExporting && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3 text-xs text-brand font-medium">
+            <div className="p-3 bg-brand-50 border border-brand-200 rounded-lg flex items-center gap-3 text-xs text-brand font-medium">
               <div className="size-4 border-2 border-brand border-t-transparent rounded-full animate-spin shrink-0" />
               <span>{progressMsg || 'Generating PDF document...'}</span>
             </div>

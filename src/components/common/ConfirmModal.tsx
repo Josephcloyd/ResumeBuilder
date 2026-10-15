@@ -10,7 +10,7 @@ export const ConfirmModal: React.FC = () => {
       <div className="card w-full max-w-sm bg-white shadow-pop overflow-hidden animate-pop-in">
         <div className="p-5">
           <div className="flex items-center gap-3">
-            <div className={`size-10 rounded-full flex items-center justify-center shrink-0 ${confirm.danger ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-brand'}`}>
+            <div className={`size-10 rounded-full flex items-center justify-center shrink-0 ${confirm.danger ? 'bg-red-100 text-red-600' : 'bg-brand-100 text-brand'}`}>
               {confirm.danger ? (
                 <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/>

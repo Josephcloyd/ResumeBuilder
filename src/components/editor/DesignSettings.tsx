@@ -64,7 +64,7 @@ export const DesignSettings: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* ATS Friendly Mode Switch */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50/50 border border-blue-200/80 rounded-xl p-4">
+      <div className="bg-gradient-to-r from-brand-50 to-brand-50/50 border border-brand-200/80 rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <span className="text-xs font-bold text-brand uppercase tracking-wider">ATS Friendly Mode</span>
@@ -97,7 +97,7 @@ export const DesignSettings: React.FC = () => {
               onClick={() => applyTemplate(t.id)}
               className={`p-3 text-left rounded-xl border transition-all ${
                 design.template === t.id
-                  ? 'border-brand bg-blue-50/50 shadow-soft ring-2 ring-brand/15'
+                  ? 'border-brand bg-brand-50/50 shadow-soft ring-2 ring-brand/15'
                   : 'border-line bg-white hover:border-slate-300 hover:bg-slate-50'
               }`}
             >
@@ -277,7 +277,7 @@ export const DesignSettings: React.FC = () => {
                 onClick={() => updateLayout({ pageSize: p.id })}
                 className={`p-2.5 text-left rounded-lg border transition-all ${
                   layout.pageSize === p.id
-                    ? 'border-brand bg-blue-50/50 shadow-soft ring-1 ring-brand/30'
+                    ? 'border-brand bg-brand-50/50 shadow-soft ring-1 ring-brand/30'
                     : 'border-line bg-white hover:bg-slate-50'
                 }`}
               >

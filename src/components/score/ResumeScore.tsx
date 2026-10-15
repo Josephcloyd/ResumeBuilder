@@ -127,7 +127,7 @@ export const ResumeScore: React.FC = () => {
   return (
     <div className="p-4 space-y-5 animate-fade-in">
       {/* Header meter */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50/40 border border-blue-100 rounded-xl p-4.5">
+      <div className="bg-gradient-to-br from-brand-50 to-brand-50/40 border border-brand-100 rounded-xl p-4.5">
         <div className="flex items-center justify-between">
           <div>
             <span className="text-xs font-semibold text-brand uppercase tracking-wider">Quality Check</span>
@@ -148,7 +148,7 @@ export const ResumeScore: React.FC = () => {
               scorePercent >= 85
                 ? 'bg-emerald-500'
                 : scorePercent >= 60
-                ? 'bg-blue-600'
+                ? 'bg-brand-600'
                 : 'bg-amber-500'
             }`}
             style={{ width: `${scorePercent}%` }}
@@ -202,7 +202,7 @@ export const ResumeScore: React.FC = () => {
           <h5 className="text-xs font-semibold text-slate-700 uppercase tracking-wider px-1">Recommendations</h5>
           <div className="space-y-2">
             {recommendations.map((r) => (
-              <div key={r.id} className="p-3 bg-blue-50/60 border border-blue-200/70 rounded-lg text-xs text-slate-700 flex items-start gap-2.5">
+              <div key={r.id} className="p-3 bg-brand-50/60 border border-brand-200/70 rounded-lg text-xs text-slate-700 flex items-start gap-2.5">
                 <svg className="size-4 text-brand shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/>
                 </svg>

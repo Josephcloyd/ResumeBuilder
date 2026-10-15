@@ -90,7 +90,7 @@ export const ExperienceEditor: React.FC<ExperienceEditorProps> = ({ sectionId })
                   className="px-3.5 py-2.5 bg-slate-50/80 hover:bg-slate-100/70 cursor-pointer flex items-center justify-between select-none"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="size-5 rounded-full bg-blue-100 text-brand text-[11px] font-bold flex items-center justify-center shrink-0">
+                    <span className="size-5 rounded-full bg-brand-100 text-brand text-[11px] font-bold flex items-center justify-center shrink-0">
                       {idx + 1}
                     </span>
                     <span className="font-semibold text-xs text-ink truncate">

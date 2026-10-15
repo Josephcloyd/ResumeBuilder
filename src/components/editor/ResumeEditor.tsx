@@ -96,7 +96,7 @@ export const ResumeEditor: React.FC = () => {
                 className="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-slate-100/70 flex items-center justify-between select-none cursor-pointer transition-colors"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="size-8 rounded-lg bg-blue-100 text-brand flex items-center justify-center">
+                  <div className="size-8 rounded-lg bg-brand-100 text-brand flex items-center justify-center">
                     <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
@@ -141,7 +141,7 @@ export const ResumeEditor: React.FC = () => {
                     className="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-slate-100/70 flex items-center justify-between select-none cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="size-8 rounded-lg bg-blue-50 text-brand flex items-center justify-center shrink-0">
+                      <div className="size-8 rounded-lg bg-brand-50 text-brand flex items-center justify-center shrink-0">
                         {sec.type === 'summary' && (
                           <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="21" x2="3" y1="6" y2="6"/><line x1="15" x2="3" y1="12" y2="12"/><line x1="17" x2="3" y1="18" y2="18"/>
