@@ -16,6 +16,10 @@ export interface PageLayout {
   sideBlocks: Block[];
 }
 
+/** Editor section a rendered block belongs to (block keys are `${sectionId}:…`; header blocks map to personal info). */
+const sectionIdOfBlock = (key: string) =>
+  key === 'identity' || key === 'sidecontact' ? 'personal' : key.split(':')[0];
+
 interface ResumeDocProps {
   resume: Resume;
   /** When true, renders an invisible measurer to calculate exact page breaks */
@@ -329,7 +333,7 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
             >
               {/* Page header (if any on this page) */}
               {page.header && (
-                <div style={{ marginBottom: effective.sectionGap }}>
+                <div data-section="personal" style={{ marginBottom: effective.sectionGap }}>
                   {page.header}
                 </div>
               )}
@@ -338,7 +342,7 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
               {!isTwoCol ? (
                 <div className="rf-main-col">
                   {page.mainBlocks.map((b, bIdx) => (
-                    <div key={b.key} className="rf-block" style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
+                    <div key={b.key} className="rf-block" data-section={sectionIdOfBlock(b.key)} style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
                       {b.el}
                     </div>
                   ))}
@@ -370,7 +374,7 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
                         }}
                       >
                         {page.sideBlocks.map((b, bIdx) => (
-                          <div key={b.key} className="rf-block" style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
+                          <div key={b.key} className="rf-block" data-section={sectionIdOfBlock(b.key)} style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
                             {b.el}
                           </div>
                         ))}
@@ -388,7 +392,7 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
                         }}
                       >
                         {page.mainBlocks.map((b, bIdx) => (
-                          <div key={b.key} className="rf-block" style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
+                          <div key={b.key} className="rf-block" data-section={sectionIdOfBlock(b.key)} style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
                             {b.el}
                           </div>
                         ))}
@@ -409,7 +413,7 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
                         }}
                       >
                         {page.mainBlocks.map((b, bIdx) => (
-                          <div key={b.key} className="rf-block" style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
+                          <div key={b.key} className="rf-block" data-section={sectionIdOfBlock(b.key)} style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
                             {b.el}
                           </div>
                         ))}
@@ -427,7 +431,7 @@ export const ResumeDoc: React.FC<ResumeDocProps> = ({
                         }}
                       >
                         {page.sideBlocks.map((b, bIdx) => (
-                          <div key={b.key} className="rf-block" style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
+                          <div key={b.key} className="rf-block" data-section={sectionIdOfBlock(b.key)} style={{ marginTop: bIdx === 0 ? 0 : b.gap }}>
                             {b.el}
                           </div>
                         ))}

@@ -6,14 +6,13 @@ import { BrandLogo } from '../common/BrandLogo';
 
 export const Header: React.FC = () => {
   const [donationOpen, setDonationOpen] = useState(false);
-  const { saveStatus, saveNow, undo, redo, past, future, newResume } = useResumeStore();
+  const { saveStatus, saveNow, undo, redo, past, future } = useResumeStore();
   const {
     view,
     setView,
     setExportOpen,
     mobilePane,
     setMobilePane,
-    ask,
     toast,
     theme,
     toggleTheme,
@@ -37,7 +36,10 @@ export const Header: React.FC = () => {
           redo();
         } else if (e.key === 's' || e.key === 'S') {
           e.preventDefault();
-          saveNow().then(() => toast('Resume saved!', 'success'));
+          saveNow().then(() => {
+            if (useResumeStore.getState().saveStatus === 'error') toast("Couldn't save in this browser.", 'error');
+            else toast('Resume saved!', 'success');
+          });
         }
       }
     };
@@ -45,18 +47,36 @@ export const Header: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [undo, redo, saveNow, toast]);
 
-  const handleNewResume = async () => {
-    const ok = await ask({
-      title: 'Create New Resume?',
-      message: 'Starting a new resume will clear the current editor. Make sure your current resume is saved.',
-      confirmLabel: 'Create New Resume',
-      danger: true,
-    });
-    if (ok) {
-      await newResume('Untitled Resume');
-      toast('Created new blank resume', 'info');
-    }
-  };
+  // Changes auto-save ~1s after editing; this shows that instead of a manual Save button
+  const saveIndicator =
+    saveStatus === 'error' ? (
+      <button
+        type="button"
+        onClick={() => void saveNow()}
+        className="flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-100"
+        title="Your latest changes couldn't be saved in this browser (storage may be full or blocked). Click to try again."
+      >
+        <span className="size-2 rounded-full bg-red-500" />
+        <span className="hidden sm:inline">Couldn't save · Retry</span>
+        <span className="sm:hidden">Retry</span>
+      </button>
+    ) : (
+      <div
+        role="status"
+        className="flex items-center gap-1.5 px-1 text-xs font-medium text-muted"
+        title="Your changes are saved automatically in this browser"
+      >
+        {saveStatus === 'saving' ? (
+          <span className="size-2 rounded-full bg-amber-400 animate-pulse" />
+        ) : (
+          <svg className="size-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+        )}
+        <span className="hidden sm:inline">{saveStatus === 'saving' ? 'Saving…' : 'Saved'}</span>
+        <span className="sr-only sm:hidden">{saveStatus === 'saving' ? 'Saving' : 'Saved'}</span>
+      </div>
+    );
 
   const navTabs = (
     <nav className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-lg" aria-label="Main views">
@@ -108,19 +128,21 @@ export const Header: React.FC = () => {
       <div className="h-14 px-3 sm:px-5 flex items-center justify-between gap-2">
         {/* Left: Brand Logo & Navigation */}
         <div className="flex items-center gap-3 sm:gap-6 min-w-0">
-          <div
-            onClick={() => setView('builder')}
+          <button
+            type="button"
+            onClick={() => setView('resumes')}
             className="cursor-pointer transition-transform hover:scale-[1.02] shrink-0"
-            title="ResumeFlow by GetLaunchPH"
+            title="ResumeFlow by GetLaunchPH · Go to My Resumes"
+            aria-label="ResumeFlow home: My Resumes"
           >
             <BrandLogo onDark={theme === 'dark'} />
-          </div>
+          </button>
 
           {/* View Nav Tabs (tablet & desktop; phones get them in a second row) */}
           <div className="hidden md:block">{navTabs}</div>
         </div>
 
-        {/* Middle: Save Status & Undo/Redo (Desktop) */}
+        {/* Middle: Undo/Redo (desktop; smaller screens get them above the editor) */}
         <div className="hidden lg:flex items-center gap-3">
           {/* Undo / Redo */}
           <div className="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-lg border border-slate-200/70">
@@ -145,43 +167,12 @@ export const Header: React.FC = () => {
               </svg>
             </button>
           </div>
-
-          {/* Save Status Indicator */}
-          <div className="flex items-center gap-1.5 text-xs text-muted font-medium px-2 py-1 rounded bg-slate-50 border border-slate-200/50">
-            {saveStatus === 'saving' ? (
-              <>
-                <div className="size-2 rounded-full bg-amber-400 animate-ping" />
-                <span>Saving...</span>
-              </>
-            ) : saveStatus === 'saved' ? (
-              <>
-                <div className="size-2 rounded-full bg-emerald-500" />
-                <span>All changes saved</span>
-              </>
-            ) : (
-              <>
-                <div className="size-2 rounded-full bg-slate-400" />
-                <span>Ready</span>
-              </>
-            )}
-          </div>
         </div>
 
         {/* Right Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Pane switcher for tablets; phones get it in the second row */}
-          {view === 'builder' && <div className="hidden md:flex lg:hidden mr-1">{paneSwitcher}</div>}
-
-          <button
-            onClick={handleNewResume}
-            className="btn btn-ghost btn-sm hidden sm:inline-flex"
-            title="New blank resume"
-          >
-            <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5v14"/><path d="M5 12h14"/>
-            </svg>
-            New
-          </button>
+          {/* Tablets switch Editor/Preview with the floating button (see App) */}
+          {saveIndicator}
 
           <button
             type="button"
@@ -202,19 +193,6 @@ export const Header: React.FC = () => {
           </button>
 
           <button
-            onClick={() => saveNow().then(() => toast('Resume saved to local library', 'success'))}
-            className="btn btn-secondary btn-sm px-2 sm:px-2.5"
-            title="Save to local browser storage"
-            aria-label="Save resume"
-          >
-            <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-              <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
-            </svg>
-            <span className="hidden sm:inline">Save</span>
-          </button>
-
-          <button
             type="button"
             onClick={() => setDonationOpen(true)}
             className="btn btn-sm px-2 sm:px-2.5 border border-amber-200 bg-amber-50 text-amber-800 shadow-soft hover:border-amber-300 hover:bg-amber-100"
@@ -224,7 +202,7 @@ export const Header: React.FC = () => {
             <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 21s-7-4.35-9.33-8.24C.83 9.69 2.1 5.5 5.74 4.42 7.93 3.77 10.2 4.6 12 6.45c1.8-1.85 4.07-2.68 6.26-2.03 3.64 1.08 4.91 5.27 3.07 8.34C19 16.65 12 21 12 21Z"/>
             </svg>
-            <span className="hidden xl:inline">Donate</span>
+            <span className="hidden sm:inline md:hidden xl:inline">Support</span>
           </button>
 
           <button
@@ -236,8 +214,8 @@ export const Header: React.FC = () => {
             <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
             </svg>
-            <span className="hidden sm:inline">Download PDF</span>
-            <span className="sm:hidden">PDF</span>
+            <span className="hidden sm:inline md:hidden xl:inline">Download PDF</span>
+            <span className="sm:hidden md:inline xl:hidden">PDF</span>
           </button>
         </div>
       </div>

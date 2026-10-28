@@ -13,12 +13,32 @@ import { GenericSectionEditor } from './GenericSectionEditor';
 import { DesignSettings } from './DesignSettings';
 import { SectionManager } from './SectionManager';
 import { ResumeScore } from '../score/ResumeScore';
+import { scoreResume } from '../../lib/score';
+import { personalProgress, sectionProgress, type SectionProgress } from '../../lib/progress';
+
+/** Small status pill next to a section title: ✓ + count when filled, amber when still empty. */
+const ProgressBadge: React.FC<{ progress: SectionProgress }> = ({ progress }) => (
+  <span
+    className={`inline-flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium ${
+      progress.filled ? 'bg-emerald-50 text-emerald-800' : 'bg-amber-50 text-amber-800'
+    }`}
+  >
+    {progress.filled && (
+      <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M20 6 9 17l-5-5"/>
+      </svg>
+    )}
+    {progress.label}
+  </span>
+);
 
 export const ResumeEditor: React.FC = () => {
-  const { resume } = useResumeStore();
+  const { resume, update, undo, redo, past, future } = useResumeStore();
   const { editorTab, setEditorTab, openSectionId, setOpenSection } = useUI();
 
   const sections = resume.sections;
+  const { scorePercent } = scoreResume(resume);
+  const personal = personalProgress(resume);
 
   const toggleSection = (id: string) => {
     setOpenSection(openSectionId === id ? null : id);
@@ -26,6 +46,53 @@ export const ResumeEditor: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-surface border-r border-line overflow-hidden">
+      {/* Resume name (rename in place) + undo/redo for screens where the header hides them */}
+      <div className="flex items-center gap-2 px-3 pt-3 bg-slate-50/80">
+        <label className="group flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2 py-1 hover:bg-slate-100 focus-within:bg-slate-100">
+          <svg className="size-3.5 shrink-0 text-slate-400 group-hover:text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+          </svg>
+          <span className="sr-only">Resume name</span>
+          <input
+            value={resume.title}
+            onChange={(e) => update((d) => { d.title = e.target.value; }, 'title')}
+            onBlur={(e) => {
+              if (!e.target.value.trim()) update((d) => { d.title = 'Untitled Resume'; }, 'title');
+            }}
+            placeholder="Untitled Resume"
+            maxLength={80}
+            title="Click to rename this resume"
+            className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-ink outline-none placeholder:text-slate-400"
+          />
+        </label>
+        <div className="flex shrink-0 items-center gap-0.5 lg:hidden">
+          <button
+            type="button"
+            onClick={undo}
+            disabled={past.length === 0}
+            className="icon-btn"
+            aria-label="Undo"
+            title="Undo"
+          >
+            <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={redo}
+            disabled={future.length === 0}
+            className="icon-btn"
+            aria-label="Redo"
+            title="Redo"
+          >
+            <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
       {/* Tab Bar */}
       <div className="p-3 border-b border-line bg-slate-50/80 select-none">
         <div className="grid grid-cols-3 gap-1 rounded-xl border border-slate-200 bg-slate-100/80 p-1">
@@ -77,33 +144,42 @@ export const ResumeEditor: React.FC = () => {
             <path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 12h20"/>
           </svg>
           Review
+          <span
+            className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
+              scorePercent >= 80 ? 'bg-emerald-100 text-emerald-800' : scorePercent >= 50 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700'
+            }`}
+            title="Resume completeness score"
+          >
+            {scorePercent}%
+          </span>
         </button>
         </div>
       </div>
 
       {/* Editor Content Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4 scroll-thin">
+      <div className="flex-1 overflow-y-auto p-5 pb-24 lg:pb-5 space-y-4 scroll-thin">
         {editorTab === 'design' && <DesignSettings />}
         {editorTab === 'score' && <ResumeScore />}
 
         {editorTab === 'content' && (
           <div className="space-y-4">
             {/* Section 1: Personal Info (Always first) */}
-            <div className="border border-line rounded-xl bg-surface shadow-soft overflow-hidden transition-all">
+            <div id="editor-section-personal" className="scroll-mt-3 border border-line rounded-xl bg-surface shadow-soft overflow-hidden transition-all">
               <button
                 type="button"
                 onClick={() => toggleSection('personal')}
-                className="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-slate-100/70 flex items-center justify-between select-none cursor-pointer transition-colors"
+                className="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-slate-100/70 flex items-center justify-between gap-2 select-none cursor-pointer transition-colors"
               >
-                <div className="flex items-center gap-2.5">
-                  <div className="size-8 rounded-lg bg-brand-100 text-brand flex items-center justify-center">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="size-8 rounded-lg bg-brand-100 text-brand flex items-center justify-center shrink-0">
                     <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
                   </div>
-                  <span className="font-bold text-xs text-ink tracking-wide">
+                  <span className="font-semibold text-sm text-ink truncate">
                     Personal Information
                   </span>
+                  <ProgressBadge progress={personal} />
                 </div>
                 <svg
                   className={`size-4 text-slate-400 transition-transform ${openSectionId === 'personal' ? 'rotate-180' : ''}`}
@@ -131,14 +207,15 @@ export const ResumeEditor: React.FC = () => {
               return (
                 <div
                   key={sec.id}
-                  className={`border border-line rounded-xl bg-surface shadow-soft overflow-hidden transition-all ${
+                  id={`editor-section-${sec.id}`}
+                  className={`scroll-mt-3 border border-line rounded-xl bg-surface shadow-soft overflow-hidden transition-all ${
                     !sec.visible ? 'opacity-60' : ''
                   }`}
                 >
                   <button
                     type="button"
                     onClick={() => toggleSection(sec.id)}
-                    className="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-slate-100/70 flex items-center justify-between select-none cursor-pointer transition-colors"
+                    className="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-slate-100/70 flex items-center justify-between gap-2 select-none cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="size-8 rounded-lg bg-brand-50 text-brand flex items-center justify-center shrink-0">
@@ -183,11 +260,13 @@ export const ResumeEditor: React.FC = () => {
                             </svg>
                           )}
                       </div>
-                      <span className="font-bold text-xs text-ink tracking-wide truncate">
+                      <span className="font-semibold text-sm text-ink truncate">
                         {sec.title}
                       </span>
-                      {!sec.visible && (
-                        <span className="text-[10px] text-muted bg-slate-100 px-1.5 py-0.5 rounded">Hidden</span>
+                      {!sec.visible ? (
+                        <span className="text-[10px] text-muted bg-slate-100 px-1.5 py-0.5 rounded shrink-0">Hidden</span>
+                      ) : (
+                        <ProgressBadge progress={sectionProgress(sec)} />
                       )}
                     </div>
 

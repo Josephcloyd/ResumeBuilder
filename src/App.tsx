@@ -13,7 +13,7 @@ import { BrandMark } from './components/common/BrandLogo';
 
 export const App: React.FC = () => {
   const { init, loaded } = useResumeStore();
-  const { view, mobilePane } = useUI();
+  const { view, mobilePane, setMobilePane } = useUI();
   const workspaceRef = useRef<HTMLDivElement>(null);
   const [editorWidth, setEditorWidth] = useState(() => {
     const saved = Number(localStorage.getItem('resumeflow:editorWidth'));
@@ -142,6 +142,32 @@ export const App: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* Phones/tablets: one-tap switch between editing and previewing */}
+      {view === 'builder' && (
+        <button
+          type="button"
+          onClick={() => setMobilePane(mobilePane === 'editor' ? 'preview' : 'editor')}
+          className="btn btn-primary lg:hidden fixed bottom-4 left-1/2 z-30 h-11 -translate-x-1/2 rounded-full px-5 shadow-pop sm:bottom-5"
+          data-no-pdf
+        >
+          {mobilePane === 'editor' ? (
+            <>
+              <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              Preview
+            </>
+          ) : (
+            <>
+              <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+              </svg>
+              Edit
+            </>
+          )}
+        </button>
+      )}
 
       {/* Global Modals & Notifications */}
       <ExportModal />

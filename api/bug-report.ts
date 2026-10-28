@@ -5,6 +5,7 @@ const MAX_REQUEST_BYTES = 2_500_000;
 const MAX_SCREENSHOT_BYTES = 2 * 1024 * 1024;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
+const DAILY_REPORT_LIMIT = 30; // site-wide, resets at midnight Philippine time
 
 const rateBuckets = new Map<string, { count: number; resetAt: number }>();
 
@@ -161,21 +162,59 @@ async function ensureTable(sql: postgres.Sql) {
       email_error TEXT
     )
   `;
+  // One row per day (Philippine time) counting accepted reports, shared by every function instance
+  await sql`
+    CREATE TABLE IF NOT EXISTS resumeflow.daily_report_counts (
+      day DATE PRIMARY KEY,
+      count INTEGER NOT NULL
+    )
+  `;
   // Defense in depth in case the schema is ever exposed; the table owner (this connection) bypasses RLS
   await sql`ALTER TABLE resumeflow.bug_reports ENABLE ROW LEVEL SECURITY`;
+  await sql`ALTER TABLE resumeflow.daily_report_counts ENABLE ROW LEVEL SECURITY`;
+}
+
+/** Returns a connected client with tables in place, or undefined when no database is configured. */
+async function readyDb() {
+  const url = process.env.DATABASE_URL;
+  if (!url) return undefined;
+
+  // prepare: false is required by Supabase's transaction pooler (port 6543)
+  db ??= postgres(url, { prepare: false, max: 1, ssl: 'require', connect_timeout: 5, idle_timeout: 20 });
+  tableReady ??= ensureTable(db).catch((error: unknown) => {
+    tableReady = undefined;
+    throw error;
+  });
+  await tableReady;
+  return db;
+}
+
+/**
+ * Counts this report toward the site-wide daily cap. Returns false once the cap is exceeded.
+ * Fails open if the database is unavailable, so a database outage never blocks real reports.
+ */
+async function withinDailyLimit() {
+  try {
+    const sql = await readyDb();
+    if (!sql) return true;
+    const [row] = await sql`
+      INSERT INTO resumeflow.daily_report_counts (day, count)
+      VALUES ((now() AT TIME ZONE 'Asia/Manila')::date, 1)
+      ON CONFLICT (day) DO UPDATE SET count = resumeflow.daily_report_counts.count + 1
+      RETURNING count
+    `;
+    return Number(row.count) <= DAILY_REPORT_LIMIT;
+  } catch (error) {
+    console.error('Daily bug report limit check failed.', error instanceof Error ? error.message : 'Unknown error');
+    return true;
+  }
 }
 
 /** Fallback when email fails: keeps the report in Postgres (Supabase) so it can be read later. */
 async function saveToDatabase(report: BugReport, attachment: Attachment | undefined, emailError: string) {
-  const url = process.env.DATABASE_URL;
-  if (!url) return false;
-
   try {
-    // prepare: false is required by Supabase's transaction pooler (port 6543)
-    db ??= postgres(url, { prepare: false, max: 1, ssl: 'require', connect_timeout: 5, idle_timeout: 20 });
-    const sql = db;
-    tableReady ??= ensureTable(sql);
-    await tableReady;
+    const sql = await readyDb();
+    if (!sql) return false;
 
     // Stored as a data: URL so pasting it into a browser address bar shows the image
     const screenshotDataUrl = attachment ? `data:${attachment.type};base64,${attachment.content}` : null;
@@ -192,7 +231,6 @@ async function saveToDatabase(report: BugReport, attachment: Attachment | undefi
     `;
     return true;
   } catch (error) {
-    tableReady = undefined;
     console.error('Bug report database fallback failed.', error instanceof Error ? error.message : 'Unknown error');
     return false;
   }
@@ -287,6 +325,10 @@ export default {
         type: screenshot.type,
         content: Buffer.from(bytes).toString('base64'),
       };
+    }
+
+    if (!(await withinDailyLimit())) {
+      return json(429, { error: 'Bug reporting has reached its limit for today. Please try again tomorrow.' });
     }
 
     const report: BugReport = { submissionId, summary, details, appArea, browser, viewport, reportedAt };

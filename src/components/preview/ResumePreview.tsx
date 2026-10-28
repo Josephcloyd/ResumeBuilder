@@ -10,7 +10,7 @@ const canvasPaddingX = () => (window.matchMedia('(min-width: 640px)').matches ? 
 
 export const ResumePreview: React.FC = () => {
   const { resume, setPageCount } = useResumeStore();
-  const { zoom, setZoom, zoomMode, setZoomMode } = useUI();
+  const { zoom, setZoom, zoomMode, setZoomMode, setEditorTab, setOpenSection, setMobilePane } = useUI();
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState(0);
@@ -26,28 +26,53 @@ export const ResumePreview: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Phones/tablets: a zoom saved on a wider screen would overflow, so start from Fit Width
+  useEffect(() => {
+    if (window.matchMedia('(max-width: 1023px)').matches && useUI.getState().zoomMode === 'custom') {
+      setZoomMode('fitWidth');
+    }
+  }, [setZoomMode]);
+
   // Auto calculate Fit Width and Fit Page
   useEffect(() => {
-    const handleFit = () => {
-      if (!containerRef.current) return;
-      const cWidth = containerRef.current.clientWidth - canvasPaddingX(); // padding
-      const cHeight = containerRef.current.clientHeight - 80;
+    const container = containerRef.current;
+    if (!container) return;
 
+    const handleFit = () => {
+      // 0 while the preview pane is hidden (phones in Editor mode); refit once it is shown
+      if (container.clientWidth === 0) return;
+      const cWidth = container.clientWidth - canvasPaddingX(); // padding
+      const cHeight = container.clientHeight - 80;
+
+      // floor so the page never ends up a pixel wider than the panel (no sideways scroll)
       if (zoomMode === 'fitWidth') {
-        const calculated = Math.round((cWidth / geom.width) * 100);
-        setZoom(calculated, 'fitWidth');
+        setZoom(Math.floor((cWidth / geom.width) * 100), 'fitWidth');
       } else if (zoomMode === 'fitPage') {
-        const calculated = Math.round(
-          Math.min(cWidth / geom.width, cHeight / geom.height) * 100
-        );
-        setZoom(calculated, 'fitPage');
+        setZoom(Math.floor(Math.min(cWidth / geom.width, cHeight / geom.height) * 100), 'fitPage');
       }
     };
 
     handleFit();
-    window.addEventListener('resize', handleFit);
-    return () => window.removeEventListener('resize', handleFit);
+    // Observes the panel itself, so it also refits when the pane appears or the divider is dragged
+    const observer = new ResizeObserver(handleFit);
+    observer.observe(container);
+    return () => observer.disconnect();
   }, [zoomMode, geom.width, geom.height, setZoom]);
+
+  /** Clicking part of the resume opens that section in the editor (ignored while selecting text or on links). */
+  const jumpToSection = (event: React.MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (target.closest('a') || !window.getSelection()?.isCollapsed) return;
+    const sectionId = target.closest<HTMLElement>('[data-section]')?.dataset.section;
+    if (!sectionId) return;
+
+    setEditorTab('content');
+    setOpenSection(sectionId);
+    setMobilePane('editor');
+    requestAnimationFrame(() =>
+      document.getElementById(`editor-section-${sectionId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+    );
+  };
 
   const handleZoomIn = () => {
     const next = ZOOM_PRESETS.find((z) => z > zoom) ?? Math.min(200, zoom + 10);
@@ -127,7 +152,7 @@ export const ResumePreview: React.FC = () => {
               setZoomMode('fitWidth');
               if (containerRef.current) {
                 const cWidth = containerRef.current.clientWidth - canvasPaddingX();
-                setZoom(Math.round((cWidth / geom.width) * 100), 'fitWidth');
+                setZoom(Math.floor((cWidth / geom.width) * 100), 'fitWidth');
               }
             }}
             className={`px-2 py-1 text-[11px] rounded font-medium transition-all ${
@@ -143,7 +168,7 @@ export const ResumePreview: React.FC = () => {
               if (containerRef.current) {
                 const cWidth = containerRef.current.clientWidth - canvasPaddingX();
                 const cHeight = containerRef.current.clientHeight - 80;
-                setZoom(Math.round(Math.min(cWidth / geom.width, cHeight / geom.height) * 100), 'fitPage');
+                setZoom(Math.floor(Math.min(cWidth / geom.width, cHeight / geom.height) * 100), 'fitPage');
               }
             }}
             className={`px-2 py-1 text-[11px] rounded font-medium transition-all ${
@@ -172,7 +197,9 @@ export const ResumePreview: React.FC = () => {
         >
           <div
             ref={contentRef}
-            className="transition-transform origin-top-left select-text"
+            onClick={jumpToSection}
+            title="Click any part of the resume to edit it"
+            className="rf-click-to-edit transition-transform origin-top-left select-text"
             style={{
               width: geom.width,
               transform: `scale(${scale})`,

@@ -6,7 +6,9 @@
     var saved = localStorage.getItem('resumeflow:theme');
     if (saved === 'light' || saved === 'dark') theme = saved;
     else if (window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
-  } catch (e) {}
+  } catch {
+    // storage blocked (private mode): fall back to light
+  }
   document.documentElement.setAttribute('data-theme', theme);
   if (theme === 'dark') {
     var meta = document.querySelector('meta[name="theme-color"]');

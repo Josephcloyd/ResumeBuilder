@@ -31,7 +31,7 @@ If an email fails (missing settings, Resend error, network), the report is saved
 
 Apply the variables to Production and Preview, then redeploy. Never put real values in `.env.example` or commit a local `.env` file.
 
-For additional abuse protection, enable Vercel Bot Protection. If your plan supports custom firewall rate limits, limit `POST /api/bug-report`; the function also applies validation, a honeypot, submission timing checks, same-origin checks, and a small per-instance rate limit.
+For additional abuse protection, enable Vercel Bot Protection. If your plan supports custom firewall rate limits, limit `POST /api/bug-report`; the function also applies validation, a honeypot, submission timing checks, same-origin checks, and a small per-instance rate limit. When `DATABASE_URL` is set, it also enforces a site-wide cap of 30 reports per day (Philippine time), counted in `resumeflow.daily_report_counts`.
 
 ## Privacy model
 

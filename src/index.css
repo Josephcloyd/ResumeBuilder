@@ -161,6 +161,20 @@
   margin: 0;
 }
 
+/* ---------- Click-to-edit hint on the live preview (screen only) ---------- */
+@media screen {
+  .rf-click-to-edit [data-section] {
+    cursor: pointer;
+    border-radius: 4px;
+    transition: outline-color 0.15s;
+    outline: 2px dashed transparent;
+    outline-offset: 3px;
+  }
+  .rf-click-to-edit [data-section]:hover {
+    outline-color: color-mix(in oklab, var(--color-brand) 55%, transparent);
+  }
+}
+
 /* ---------- Printing (vector PDF via browser) ---------- */
 @media print {
   /* Hide application chrome and navigation */
