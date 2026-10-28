@@ -1,0 +1,74 @@
+/* Boot splash: same animated emblem as getlaunchph.com's loading screen.
+   Loaded from index.html so it paints before the app bundle; App removes #boot-splash once data is ready. */
+
+#boot-splash {
+  --forest: #344c43;
+  --cream: #f8f7f3;
+  --sage-light: #a9bdb3;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  font-family: 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif;
+  color: var(--cream);
+}
+#boot-splash.is-leaving {
+  animation: splash-out 0.55s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+#boot-splash.is-leaving .loading-stage {
+  animation: splash-lift 0.55s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes splash-out { to { opacity: 0; visibility: hidden; } }
+@keyframes splash-lift { to { opacity: 0; transform: translateY(-22px) scale(0.94); } }
+
+.loading-screen { background: radial-gradient(60% 48% at 50% 44%, #7894864d, transparent 72%), var(--forest); place-items: center; min-height: 100dvh; padding: 24px 16px; display: grid; }
+.loading-stage { text-align: center; justify-items: center; gap: 30px; display: grid; }
+.loading-emblem { --lm-ink: #334d44; width: 104px; height: 104px; color: var(--cream); position: relative; }
+.loading-emblem svg { z-index: 1; width: 100%; height: 100%; display: block; position: relative; overflow: visible; }
+.loading-wordmark { font: 650 1.5rem/1 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.05em; margin: 0; }
+.loading-caption { color: #0000; background: linear-gradient(90deg, var(--sage-light) 0 38%, var(--cream) 50%, var(--sage-light) 62% 100%) 0 0 / 260% 100%; font: 600 0.76rem/1 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.16em; text-transform: uppercase; -webkit-background-clip: text; background-clip: text; margin: -16px 0 0; animation: 0.6s ease-out 1.4s both lm-fade, 2.6s linear 1.4s infinite lm-shimmer; }
+
+.lm-halo { will-change: transform, opacity; background: radial-gradient(closest-side, #a9bdb352, #a9bdb300); border-radius: 50%; animation: 0.9s ease-out 0.3s both lm-fade, 3.2s ease-in-out 1.5s infinite lm-breathe; position: absolute; inset: -42%; }
+.lm-shadow { will-change: transform, opacity; background: radial-gradient(closest-side, #0a1b146b, #0a1b1400); border-radius: 50%; height: 20%; animation: 0.5s ease-out 0.45s both lm-fade, 3.2s ease-in-out 1.5s infinite lm-float-shadow; position: absolute; bottom: -16%; left: 14%; right: 14%; }
+.lm-orbit { border-radius: 50%; animation: 0.7s ease-out 0.45s both lm-fade; position: absolute; inset: -19px; }
+.lm-orbit::before { content: ''; border: 1px solid #f8f7f31a; border-radius: 50%; position: absolute; inset: 0; }
+.lm-orbit-arc { will-change: transform; animation: 1.9s cubic-bezier(0.55, 0.12, 0.45, 0.88) infinite lm-spin; position: absolute; inset: 0; }
+.lm-orbit-arc::before { content: ''; background: conic-gradient(from 0deg, transparent 0 58%, #f8f7f3e6); border-radius: 50%; position: absolute; inset: 0; -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 1.6px), #000 calc(100% - 1.4px)); mask: radial-gradient(farthest-side, #0000 calc(100% - 1.6px), #000 calc(100% - 1.4px)); }
+.lm-orbit-arc::after { content: ''; background: var(--cream); border-radius: 50%; width: 5px; height: 5px; margin-left: -2.5px; position: absolute; top: -2.5px; left: 50%; box-shadow: 0 0 10px 2px #f8f7f3a6; }
+.lm-hex-fill { transform-box: fill-box; transform-origin: 50%; animation: 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both lm-fill; }
+.lm-hex-line { fill: none; stroke: currentColor; stroke-width: 1.2px; stroke-linejoin: round; stroke-dasharray: 1; opacity: 0; animation: 0.85s cubic-bezier(0.65, 0, 0.35, 1) both lm-trace; }
+.lm-ink { fill: currentColor; stroke: var(--lm-ink); stroke-width: 3.7px; stroke-linecap: round; stroke-linejoin: round; }
+.lm-line { fill: none; stroke-dasharray: 1; animation: 0.38s cubic-bezier(0.65, 0, 0.35, 1) both lm-draw; }
+.lm-line.lm-trunk { animation-delay: 0.75s; }
+.lm-line.lm-left, .lm-line.lm-right { animation-delay: 0.98s; }
+.lm-node { transform-box: fill-box; transform-origin: 50%; animation: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both lm-pop, 2.4s ease-out infinite lm-ping; }
+.lm-node-1 { animation-delay: 1.05s, 2.65s; }
+.lm-node-2 { animation-delay: 1.15s, 2.91s; }
+.lm-node-3 { animation-delay: 1.25s, 3.05s; }
+.lm-base { fill: var(--lm-ink); stroke: none; transform-box: fill-box; transform-origin: bottom; animation: 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both lm-rise; }
+.lm-pulse { fill: none; stroke: #e6eee9; stroke-width: 1.5px; stroke-dasharray: 0.16 1.2; stroke-dashoffset: 0.16px; opacity: 0; animation: 2.4s cubic-bezier(0.45, 0, 0.25, 1) 1.6s infinite lm-signal; }
+.lm-pulse.lm-left { animation-delay: 1.86s; }
+.lm-pulse.lm-right { animation-delay: 2s; }
+.lm-sheen { mix-blend-mode: soft-light; animation: 3.6s cubic-bezier(0.4, 0, 0.2, 1) 1.5s infinite lm-sheen; transform: translate(-30px); }
+.lm-letter { animation: 0.7s cubic-bezier(0.22, 1, 0.36, 1) both lm-letter; animation-delay: calc(1.05s + var(--i) * 32ms); display: inline-block; }
+.lm-letter-accent { color: #b5c9bd; font-weight: 700; }
+
+@keyframes lm-fade { 0% { opacity: 0; } }
+@keyframes lm-breathe { 50% { opacity: 0.7; transform: scale(1.08); } }
+@keyframes lm-spin { to { transform: rotate(1turn); } }
+@keyframes lm-trace { 0% { stroke-dashoffset: 1px; opacity: 0; } 4% { opacity: 1; } 70% { stroke-dashoffset: 0; opacity: 1; } to { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes lm-fill { 0% { opacity: 0; transform: scale(0.88); } }
+@keyframes lm-draw { 0% { stroke-dashoffset: 1px; opacity: 0; } 12% { opacity: 1; } }
+@keyframes lm-pop { 0% { opacity: 0; transform: scale(0); } }
+@keyframes lm-ping { 0%, 22%, to { transform: scale(1); } 7% { transform: scale(1.16); } }
+@keyframes lm-rise { 0% { opacity: 0; transform: translateY(5px) scaleY(0.4); } }
+@keyframes lm-signal { 0% { stroke-dashoffset: 0.16px; opacity: 0; } 6% { opacity: 1; } 42% { stroke-dashoffset: -1px; opacity: 1; } 44%, to { stroke-dashoffset: -1px; opacity: 0; } }
+@keyframes lm-sheen { 0% { transform: translate(-30px); } 38%, to { transform: translate(56px); } }
+@keyframes lm-letter { 0% { opacity: 0; transform: translateY(0.5em); } }
+@keyframes lm-float-shadow { 50% { opacity: 0.7; transform: scaleX(0.86); } }
+@keyframes lm-shimmer { to { background-position: -160% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  #boot-splash *, #boot-splash ::before, #boot-splash ::after { animation: none !important; }
+  .lm-orbit-arc { display: none; }
+  .loading-caption { color: var(--sage-light); background: none; }
+}

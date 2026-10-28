@@ -9,7 +9,52 @@ import { TemplatesView } from './components/views/TemplatesView';
 import { ExportModal } from './components/pdf/ExportModal';
 import { ConfirmModal, ToastContainer } from './components/common/ConfirmModal';
 import { BugReportBubble } from './components/common/BugReportBubble';
-import { BrandMark } from './components/common/BrandLogo';
+
+/** Like getlaunchph.com: a short beat after the intro animation completes before fading out. */
+const SPLASH_HOLD_AFTER_INTRO_MS = 200;
+/** Never keep people waiting longer than this, even if animations stall (e.g. background tab). */
+const SPLASH_MAX_WAIT_MS = 4000;
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/** Resolves when every one-shot animation in the splash (emblem draw, letters, caption fade) has finished. */
+function splashIntroFinished(splash: HTMLElement) {
+  if (typeof splash.getAnimations !== 'function') return new Promise((r) => setTimeout(r, 2200));
+  const oneShot = splash
+    .getAnimations({ subtree: true })
+    .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity);
+  return Promise.all(oneShot.map((a) => a.finished.catch(() => undefined)));
+}
+
+/** Plays the #boot-splash intro in full, then fades it out and removes it. Returns a cleanup for useEffect. */
+function dismissBootSplash() {
+  const splash = document.getElementById('boot-splash');
+  if (!splash) return undefined;
+
+  if (prefersReducedMotion) {
+    splash.remove();
+    return undefined;
+  }
+
+  let cancelled = false;
+  let leaveTimer: ReturnType<typeof setTimeout> | undefined;
+  const maxWait = new Promise((r) => setTimeout(r, SPLASH_MAX_WAIT_MS));
+
+  void Promise.race([splashIntroFinished(splash), maxWait]).then(() => {
+    if (cancelled) return;
+    leaveTimer = setTimeout(() => {
+      splash.classList.add('is-leaving');
+      splash.addEventListener('animationend', (e) => {
+        if (e.target === splash) splash.remove();
+      });
+      setTimeout(() => splash.remove(), 900); // in case animationend never fires
+    }, SPLASH_HOLD_AFTER_INTRO_MS);
+  });
+
+  return () => {
+    cancelled = true;
+    clearTimeout(leaveTimer);
+  };
+}
 
 export const App: React.FC = () => {
   const { init, loaded } = useResumeStore();
@@ -24,6 +69,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     init();
   }, [init]);
+
+  useEffect(() => {
+    if (loaded) return dismissBootSplash();
+  }, [loaded]);
 
   const resizeEditor = useCallback((clientX: number) => {
     const workspace = workspaceRef.current;
@@ -59,17 +108,8 @@ export const App: React.FC = () => {
     });
   };
 
-  if (!loaded) {
-    return (
-      <div className="h-dvh w-full flex flex-col items-center justify-center bg-slate-50 gap-3">
-        <BrandMark className="size-14 animate-pulse" />
-        <p className="text-xs font-semibold text-slate-600 tracking-wide">
-          Loading ResumeFlow...
-        </p>
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted">by GetLaunchPH</p>
-      </div>
-    );
-  }
+  // The boot splash in index.html covers the screen until resumes are loaded
+  if (!loaded) return null;
 
   return (
     <div className="h-dvh w-full flex flex-col overflow-hidden bg-slate-50 font-sans">

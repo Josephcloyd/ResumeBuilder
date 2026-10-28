@@ -57,7 +57,7 @@ export const PersonalInfoEditor: React.FC = () => {
           </div>
 
           {/* Photo Actions & Shape Selector */}
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -72,7 +72,7 @@ export const PersonalInfoEditor: React.FC = () => {
             </div>
 
             {/* Shape choices */}
-            <div className="flex items-center gap-1.5 pt-1">
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
               <span className="text-[11px] text-muted mr-1">Style:</span>
               {(['circle', 'rounded', 'square', 'none'] as PhotoShape[]).map((shape) => (
                 <button
