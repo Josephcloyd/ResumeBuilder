@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer';
+import postgres from 'postgres';
 
 const MAX_REQUEST_BYTES = 2_500_000;
 const MAX_SCREENSHOT_BYTES = 2 * 1024 * 1024;
@@ -68,6 +69,135 @@ function isRateLimited(request: Request) {
   return Math.max(1, Math.ceil((bucket.resetAt - now) / 1000));
 }
 
+interface BugReport {
+  submissionId: string;
+  summary: string;
+  details: string;
+  appArea: string;
+  browser: string;
+  viewport: string;
+  reportedAt: string;
+}
+
+interface Attachment {
+  filename: string;
+  type: string;
+  content: string; // base64
+}
+
+/** Sends the report by email. Returns null on success, or a short reason it failed. */
+async function sendEmail(report: BugReport, attachment?: Attachment): Promise<string | null> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.BUG_REPORT_TO_EMAIL;
+  const from = process.env.BUG_REPORT_FROM_EMAIL;
+  if (!apiKey || !to || !from) return 'Email environment variables are not configured.';
+
+  const lines = [
+    `Bug: ${report.summary}`,
+    '',
+    'What happened:',
+    report.details,
+  ];
+
+  if (report.appArea || report.browser || report.viewport || report.reportedAt) {
+    lines.push('', 'Technical details:');
+    if (report.appArea) lines.push(`- App area: ${report.appArea}`);
+    if (report.reportedAt) lines.push(`- Date: ${report.reportedAt}`);
+    if (report.browser) lines.push(`- Browser: ${report.browser}`);
+    if (report.viewport) lines.push(`- Screen: ${report.viewport}`);
+  }
+
+  if (attachment) lines.push('', 'A user-supplied screenshot is attached.');
+  lines.push('', `Submission ID: ${report.submissionId}`);
+
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'Idempotency-Key': `resumeflow-bug/${report.submissionId}`,
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        subject: `[ResumeFlow Bug] ${report.summary}`,
+        text: lines.join('\n'),
+        ...(attachment ? { attachments: [{ filename: attachment.filename, content: attachment.content }] } : {}),
+      }),
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (response.ok) return null;
+    const body = await response.text().catch(() => '');
+    return `Resend rejected the email (HTTP ${response.status}): ${body.slice(0, 300)}`;
+  } catch (error) {
+    return `Email request failed: ${error instanceof Error ? error.message : 'unknown error'}`;
+  }
+}
+
+let db: postgres.Sql | undefined;
+let tableReady: Promise<void> | undefined;
+
+/**
+ * Lives in its own `resumeflow` schema, not `public`: Supabase exposes `public` tables through its
+ * REST API (reachable with the site's public anon key), so bug reports must stay out of it.
+ */
+async function ensureTable(sql: postgres.Sql) {
+  // Only create the schema when missing, so a limited role (USAGE + CREATE on the schema only) also works
+  const [schema] = await sql`SELECT 1 FROM pg_namespace WHERE nspname = 'resumeflow'`;
+  if (!schema) await sql`CREATE SCHEMA resumeflow`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS resumeflow.bug_reports (
+      id TEXT PRIMARY KEY,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      summary TEXT NOT NULL,
+      details TEXT NOT NULL,
+      app_area TEXT,
+      browser TEXT,
+      viewport TEXT,
+      reported_at TEXT,
+      screenshot_name TEXT,
+      screenshot_data_url TEXT,
+      email_error TEXT
+    )
+  `;
+  // Defense in depth in case the schema is ever exposed; the table owner (this connection) bypasses RLS
+  await sql`ALTER TABLE resumeflow.bug_reports ENABLE ROW LEVEL SECURITY`;
+}
+
+/** Fallback when email fails: keeps the report in Postgres (Supabase) so it can be read later. */
+async function saveToDatabase(report: BugReport, attachment: Attachment | undefined, emailError: string) {
+  const url = process.env.DATABASE_URL;
+  if (!url) return false;
+
+  try {
+    // prepare: false is required by Supabase's transaction pooler (port 6543)
+    db ??= postgres(url, { prepare: false, max: 1, ssl: 'require', connect_timeout: 5, idle_timeout: 20 });
+    const sql = db;
+    tableReady ??= ensureTable(sql);
+    await tableReady;
+
+    // Stored as a data: URL so pasting it into a browser address bar shows the image
+    const screenshotDataUrl = attachment ? `data:${attachment.type};base64,${attachment.content}` : null;
+    await sql`
+      INSERT INTO resumeflow.bug_reports (
+        id, summary, details, app_area, browser, viewport, reported_at,
+        screenshot_name, screenshot_data_url, email_error
+      ) VALUES (
+        ${report.submissionId}, ${report.summary}, ${report.details},
+        ${report.appArea || null}, ${report.browser || null}, ${report.viewport || null}, ${report.reportedAt || null},
+        ${attachment?.filename ?? null}, ${screenshotDataUrl}, ${emailError}
+      )
+      ON CONFLICT (id) DO NOTHING
+    `;
+    return true;
+  } catch (error) {
+    tableReady = undefined;
+    console.error('Bug report database fallback failed.', error instanceof Error ? error.message : 'Unknown error');
+    return false;
+  }
+}
+
 function isSameOrigin(request: Request) {
   const origin = request.headers.get('origin');
   if (!origin) return false;
@@ -119,9 +249,9 @@ export default {
       return json(200, { ok: true });
     }
 
-    const startedAt = Number(textField(form, 'startedAt', 20));
-    const elapsed = Date.now() - startedAt;
-    if (!Number.isFinite(startedAt) || elapsed < 1_500 || elapsed > 24 * 60 * 60 * 1000) {
+    // Time the form was open, measured on the client so device clock differences don't matter
+    const elapsed = Number(textField(form, 'elapsedMs', 20));
+    if (!Number.isFinite(elapsed) || elapsed < 1_500 || elapsed > 24 * 60 * 60 * 1000) {
       return json(400, { error: 'Please reopen the bug form and try again.' });
     }
 
@@ -138,7 +268,7 @@ export default {
     }
 
     const screenshot = form.get('screenshot');
-    let attachment: { filename: string; content: string } | undefined;
+    let attachment: Attachment | undefined;
     if (screenshot instanceof File && screenshot.size > 0) {
       if (screenshot.size > MAX_SCREENSHOT_BYTES) {
         return json(413, { error: 'Screenshots must be 2 MB or smaller.' });
@@ -154,61 +284,21 @@ export default {
 
       attachment = {
         filename: safeFileName(screenshot.name, screenshot.type),
+        type: screenshot.type,
         content: Buffer.from(bytes).toString('base64'),
       };
     }
 
-    const apiKey = process.env.RESEND_API_KEY;
-    const to = process.env.BUG_REPORT_TO_EMAIL;
-    const from = process.env.BUG_REPORT_FROM_EMAIL;
-    if (!apiKey || !to || !from) {
-      console.error('Bug report email environment variables are not configured.');
-      return json(503, { error: 'Bug reporting is temporarily unavailable.' });
+    const report: BugReport = { submissionId, summary, details, appArea, browser, viewport, reportedAt };
+
+    const emailError = await sendEmail(report, attachment);
+    if (!emailError) return json(200, { ok: true });
+
+    console.error('Bug report email failed; saving to database instead.', emailError);
+    if (await saveToDatabase(report, attachment, emailError)) {
+      return json(200, { ok: true });
     }
 
-    const lines = [
-      `Bug: ${summary}`,
-      '',
-      'What happened:',
-      details,
-    ];
-
-    if (appArea || browser || viewport || reportedAt) {
-      lines.push('', 'Technical details:');
-      if (appArea) lines.push(`- App area: ${appArea}`);
-      if (reportedAt) lines.push(`- Date: ${reportedAt}`);
-      if (browser) lines.push(`- Browser: ${browser}`);
-      if (viewport) lines.push(`- Screen: ${viewport}`);
-    }
-
-    if (attachment) lines.push('', 'A user-supplied screenshot is attached.');
-    lines.push('', `Submission ID: ${submissionId}`);
-
-    const emailResponse = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'Idempotency-Key': `resumeflow-bug/${submissionId}`,
-      },
-      body: JSON.stringify({
-        from,
-        to: [to],
-        subject: `[ResumeFlow Bug] ${summary}`,
-        text: lines.join('\n'),
-        ...(attachment ? { attachments: [attachment] } : {}),
-      }),
-      signal: AbortSignal.timeout(8_000),
-    }).catch((error: unknown) => {
-      console.error('Bug report delivery failed.', error instanceof Error ? error.message : 'Unknown error');
-      return null;
-    });
-
-    if (!emailResponse?.ok) {
-      console.error('Bug report email provider rejected the request.', emailResponse?.status ?? 'network-error');
-      return json(502, { error: 'The report could not be delivered. Please try again later.' });
-    }
-
-    return json(200, { ok: true });
+    return json(502, { error: 'The report could not be delivered. Please try again later.' });
   },
 };

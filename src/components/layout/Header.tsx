@@ -62,9 +62,9 @@ export const Header: React.FC = () => {
     <nav className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-lg" aria-label="Main views">
       {(
         [
-          ['builder', 'Builder', 'Builder'],
           ['resumes', 'My Resumes', 'Resumes'],
           ['templates', 'Templates', 'Templates'],
+          ['builder', 'Builder', 'Builder'],
         ] as const
       ).map(([id, label, shortLabel]) => (
         <button

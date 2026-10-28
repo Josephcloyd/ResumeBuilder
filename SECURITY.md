@@ -2,7 +2,7 @@
 
 ## Data handling
 
-ResumeFlow stores resumes and uploaded resume images locally in the user's browser. The application does not send resume data to a server. Bug reports are sent only after the user submits the form and may include the entered description, optional diagnostics, and an optional screenshot. Résumé content is never added automatically.
+ResumeFlow stores resumes and uploaded resume images locally in the user's browser. The application does not send resume data to a server. Bug reports are sent only after the user submits the form and may include the entered description, optional diagnostics, and an optional screenshot. They are delivered by email, or kept in the project's private database if email delivery fails. Résumé content is never added automatically.
 
 Browser storage is not encrypted. Anyone with access to the same browser profile may be able to read locally stored resumes. Users on shared devices should export anything they need, then use **My Resumes → Privacy and local data → Delete local data**.
 

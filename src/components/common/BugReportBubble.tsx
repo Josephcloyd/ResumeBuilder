@@ -3,6 +3,7 @@ import { useUI } from '../../store/uiStore';
 import { validateImageFile } from '../../lib/image';
 
 const MAX_BUG_SCREENSHOT_BYTES = 2 * 1024 * 1024;
+const MIN_FORM_OPEN_MS = 1_600;
 
 export const BugReportBubble: React.FC = () => {
   const { view, editorTab, mobilePane, toast } = useUI();
@@ -13,7 +14,6 @@ export const BugReportBubble: React.FC = () => {
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState('');
   const [isDraggingScreenshot, setIsDraggingScreenshot] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [website, setWebsite] = useState('');
   const summaryRef = useRef<HTMLInputElement>(null);
   const openedAtRef = useRef(0);
@@ -99,25 +99,13 @@ export const BugReportBubble: React.FC = () => {
     }
   };
 
-  const submitReport = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (isSubmitting) return;
+  /** Sends in the background; if it ultimately fails, puts the report back in the form. */
+  const deliverReport = async (form: FormData, draft: { summary: string; details: string; screenshot: File | null }) => {
+    // The server rejects forms submitted within ~1.5s of opening (bot check), so wait out the remainder
+    const openFor = Date.now() - openedAtRef.current;
+    if (openFor < MIN_FORM_OPEN_MS) await new Promise((resolve) => setTimeout(resolve, MIN_FORM_OPEN_MS - openFor));
+    form.set('elapsedMs', String(Date.now() - openedAtRef.current));
 
-    const form = new FormData();
-    form.set('summary', summary.trim());
-    form.set('details', details.trim());
-    form.set('startedAt', String(openedAtRef.current));
-    form.set('submissionId', crypto.randomUUID());
-    form.set('website', website);
-    if (screenshot) form.set('screenshot', screenshot, screenshot.name);
-    if (includeDiagnostics) {
-      form.set('appArea', `${view}${view === 'builder' ? ` / ${editorTab} / ${mobilePane}` : ''}`);
-      form.set('reportedAt', new Date().toISOString());
-      form.set('browser', navigator.userAgent);
-      form.set('viewport', `${window.innerWidth} × ${window.innerHeight}`);
-    }
-
-    setIsSubmitting(true);
     try {
       const response = await fetch('/api/bug-report', {
         method: 'POST',
@@ -128,18 +116,56 @@ export const BugReportBubble: React.FC = () => {
       // The /api endpoint only exists on Vercel (not under `npm run dev`)
       if (response.status === 404) throw new Error('Sending is only available on the live site. Use Copy instead.');
       if (!response.ok) throw new Error(result.error || 'The report could not be sent.');
-
-      setSummary('');
-      setDetails('');
-      setScreenshot(null);
-      setScreenshotPreview('');
-      setIsOpen(false);
-      toast('Bug report sent securely. Thank you!', 'success');
     } catch (error) {
-      toast(error instanceof Error ? error.message : 'The report could not be sent.', 'error');
-    } finally {
-      setIsSubmitting(false);
+      // Restore the draft unless the user has already started a new one
+      setSummary((current) => current || draft.summary);
+      setDetails((current) => current || draft.details);
+      if (draft.screenshot) {
+        const file = draft.screenshot;
+        const preview = URL.createObjectURL(file);
+        setScreenshot((current) => current ?? file);
+        setScreenshotPreview((current) => {
+          if (!current) return preview;
+          URL.revokeObjectURL(preview);
+          return current;
+        });
+      }
+      const reason = error instanceof Error ? error.message : 'The report could not be sent.';
+      toast(`${reason} Your report is still in the bug form.`, 'error');
     }
+  };
+
+  const submitReport = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const draft = { summary: summary.trim(), details: details.trim(), screenshot };
+    if (draft.summary.length < 3 || draft.details.length < 10) {
+      toast('Add a title (3+ characters) and a description (10+ characters).', 'error');
+      return;
+    }
+
+    const form = new FormData();
+    form.set('summary', draft.summary);
+    form.set('details', draft.details);
+    form.set('submissionId', crypto.randomUUID());
+    form.set('website', website);
+    if (screenshot) form.set('screenshot', screenshot, screenshot.name);
+    if (includeDiagnostics) {
+      form.set('appArea', `${view}${view === 'builder' ? ` / ${editorTab} / ${mobilePane}` : ''}`);
+      form.set('reportedAt', new Date().toISOString());
+      form.set('browser', navigator.userAgent);
+      form.set('viewport', `${window.innerWidth} × ${window.innerHeight}`);
+    }
+
+    // Optimistic: thank the user right away; delivery finishes in the background
+    setSummary('');
+    setDetails('');
+    setScreenshot(null);
+    setScreenshotPreview('');
+    setIsOpen(false);
+    toast('Thanks! Your bug report was sent.', 'success');
+
+    void deliverReport(form, draft);
   };
 
   return (
@@ -312,17 +338,17 @@ export const BugReportBubble: React.FC = () => {
             </p>
 
             <div className="flex items-center gap-2 pt-1">
-              <button type="button" onClick={copyReport} disabled={isSubmitting} className="btn btn-secondary flex-1">
+              <button type="button" onClick={copyReport} className="btn btn-secondary flex-1">
                 <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
                 </svg>
                 Copy
               </button>
-              <button type="submit" disabled={isSubmitting} className="btn btn-primary flex-[1.4] disabled:cursor-not-allowed disabled:opacity-60">
+              <button type="submit" className="btn btn-primary flex-[1.4]">
                 <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
                 </svg>
-                {isSubmitting ? 'Sending…' : 'Send report'}
+                Send report
               </button>
             </div>
           </form>

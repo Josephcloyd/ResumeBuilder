@@ -10,6 +10,6 @@
   document.documentElement.setAttribute('data-theme', theme);
   if (theme === 'dark') {
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', '#131B2B');
+    if (meta) meta.setAttribute('content', '#1C1C1C');
   }
 })();

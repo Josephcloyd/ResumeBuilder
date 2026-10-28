@@ -86,7 +86,7 @@ export const useUI = create<UIState>((set, get) => ({
   toggleTheme: () => {
     const theme: Theme = get().theme === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', theme);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#131B2B' : '#2F5446');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#1C1C1C' : '#2F5446');
     try {
       localStorage.setItem('resumeflow:theme', theme);
     } catch {

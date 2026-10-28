@@ -220,59 +220,61 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --color-surface: #131b2b;
-  --color-canvas: #0d1422;
-  --color-ink: #e5e9f0;
-  --color-muted: #94a3b8;
-  --color-line: #263247;
+  /* Plain neutral greys; borders do the separating instead of glows/shadows */
+  --color-surface: #1c1c1c;
+  --color-canvas: #141414;
+  --color-ink: #ececec;
+  --color-muted: #9a9a9a;
+  --color-line: #2e2e2e;
+  --color-night: #0a0a0a;
 
   --color-brand: #4a8a70;
   --color-brand-hover: #3f7a63;
-  --color-brand-dark: #a8d5c0;
-  --color-brand-light: #1c3a2f;
-  --color-brand-50: #142a22;
-  --color-brand-100: #1c3a2f;
-  --color-brand-200: #285040;
-  --color-brand-300: #3a6a56;
+  --color-brand-dark: #b9d6c8;
+  --color-brand-light: #23302a;
+  --color-brand-50: #1e2622;
+  --color-brand-100: #23302a;
+  --color-brand-200: #2e4037;
+  --color-brand-300: #3e5a4c;
 
-  --color-slate-50: #0d1422;
-  --color-slate-100: #1a2436;
-  --color-slate-200: #263247;
-  --color-slate-300: #374359;
-  --color-slate-400: #6b7a93;
-  --color-slate-500: #8a98ae;
-  --color-slate-600: #a7b3c5;
-  --color-slate-700: #c3ccd9;
-  --color-slate-800: #dde3eb;
-  --color-slate-900: #eef2f6;
+  --color-slate-50: #141414;
+  --color-slate-100: #242424;
+  --color-slate-200: #2e2e2e;
+  --color-slate-300: #3d3d3d;
+  --color-slate-400: #707070;
+  --color-slate-500: #8f8f8f;
+  --color-slate-600: #ababab;
+  --color-slate-700: #c4c4c4;
+  --color-slate-800: #dcdcdc;
+  --color-slate-900: #eeeeee;
 
-  --color-amber-50: #2a1f0b;
-  --color-amber-100: #3a2a0e;
-  --color-amber-200: #5c4314;
-  --color-amber-800: #fde68a;
-  --color-amber-900: #fef3c7;
+  --color-amber-50: #262117;
+  --color-amber-100: #2f291c;
+  --color-amber-200: #463c26;
+  --color-amber-800: #e8d39a;
+  --color-amber-900: #f2e6c4;
 
-  --color-red-50: #2c1215;
-  --color-red-100: #3f171b;
-  --color-red-200: #6b2228;
-  --color-red-700: #fca5a5;
+  --color-red-50: #271c1c;
+  --color-red-100: #322222;
+  --color-red-200: #4a2e2e;
+  --color-red-700: #f0a8a8;
 
-  --color-emerald-50: #0f2a20;
-  --color-emerald-100: #13382a;
-  --color-emerald-200: #1d5240;
-  --color-emerald-800: #a7f3d0;
+  --color-emerald-50: #1b231f;
+  --color-emerald-100: #212d27;
+  --color-emerald-200: #2c4036;
+  --color-emerald-800: #b4dcc8;
 
-  --color-blue-50: #121f38;
-  --color-blue-100: #1a2c4f;
-  --color-blue-200: #27417a;
+  --color-blue-50: #1d2129;
+  --color-blue-100: #232a35;
+  --color-blue-200: #303a4a;
 
-  --color-violet-100: #2a1f4a;
-  --color-violet-700: #c4b5fd;
+  --color-violet-100: #29252f;
+  --color-violet-700: #cbc0e0;
 
-  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.3);
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.35);
-  --shadow-pop: 0 10px 40px -10px rgb(0 0 0 / 0.6), 0 2px 8px rgb(0 0 0 / 0.3);
-  --shadow-page: 0 1px 3px rgb(0 0 0 / 0.4), 0 12px 32px -8px rgb(0 0 0 / 0.5);
+  --shadow-soft: none;
+  --shadow-card: none;
+  --shadow-pop: 0 8px 24px rgb(0 0 0 / 0.45);
+  --shadow-page: 0 2px 12px rgb(0 0 0 / 0.4);
 }
 
 :root[data-theme='dark'] .paper {

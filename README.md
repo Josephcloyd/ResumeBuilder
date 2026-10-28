@@ -27,6 +27,8 @@ Before deploying, create an email API key and a verified sending address with Re
 - `BUG_REPORT_TO_EMAIL` — the private inbox that receives reports; mark this as sensitive.
 - `BUG_REPORT_FROM_EMAIL` — a sender on your verified domain, such as `ResumeFlow Bugs <bugs@example.com>`.
 
+If an email fails (missing settings, Resend error, network), the report is saved to the Postgres table `resumeflow.bug_reports` instead, with the failure reason in `email_error`. To enable this, set `DATABASE_URL` to your Supabase **Transaction pooler** connection string (Supabase → Connect, port 6543) and mark it sensitive. The `resumeflow` schema and table are created on first use and are kept out of the `public` schema so the Supabase REST API never exposes them.
+
 Apply the variables to Production and Preview, then redeploy. Never put real values in `.env.example` or commit a local `.env` file.
 
 For additional abuse protection, enable Vercel Bot Protection. If your plan supports custom firewall rate limits, limit `POST /api/bug-report`; the function also applies validation, a honeypot, submission timing checks, same-origin checks, and a small per-instance rate limit.
