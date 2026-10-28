@@ -32,7 +32,7 @@ export const TemplatesView: React.FC = () => {
           return (
             <div
               key={tpl.id}
-              className={`card bg-white overflow-hidden transition-all duration-200 flex flex-col justify-between hover:shadow-card hover:-translate-y-1 ${
+              className={`card bg-surface overflow-hidden transition-all duration-200 flex flex-col justify-between hover:shadow-card hover:-translate-y-1 ${
                 isSelected ? 'ring-2 ring-brand border-brand shadow-card' : 'border-line'
               }`}
             >
@@ -42,7 +42,7 @@ export const TemplatesView: React.FC = () => {
                 className="h-44 p-4 cursor-pointer bg-slate-50 flex flex-col justify-between border-b border-line select-none relative group overflow-hidden"
               >
                 {/* Simulated resume document wireframe preview */}
-                <div className="w-full h-full bg-white rounded shadow-xs p-2.5 flex flex-col gap-1.5 transition-transform group-hover:scale-102">
+                <div className="paper w-full h-full bg-white rounded shadow-xs p-2.5 flex flex-col gap-1.5 transition-transform group-hover:scale-102">
                   {/* Wireframe header */}
                   <div className={`flex items-center gap-2 ${tpl.id === 'modern-professional' ? 'bg-blue-600 p-1.5 rounded text-white' : ''}`}>
                     <div className={`size-5 rounded-full ${tpl.id === 'modern-professional' ? 'bg-white' : 'bg-blue-500'}`} />

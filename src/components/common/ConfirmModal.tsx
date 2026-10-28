@@ -6,8 +6,8 @@ export const ConfirmModal: React.FC = () => {
   if (!confirm) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-      <div className="card w-full max-w-sm bg-white shadow-pop overflow-hidden animate-pop-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-night/60 backdrop-blur-xs animate-fade-in">
+      <div className="card w-full max-w-sm bg-surface shadow-pop overflow-hidden animate-pop-in">
         <div className="p-5">
           <div className="flex items-center gap-3">
             <div className={`size-10 rounded-full flex items-center justify-center shrink-0 ${confirm.danger ? 'bg-red-100 text-red-600' : 'bg-brand-100 text-brand'}`}>
@@ -62,7 +62,7 @@ export const ToastContainer: React.FC = () => {
             t.tone === 'error'
               ? 'bg-red-600 text-white'
               : t.tone === 'info'
-              ? 'bg-slate-800 text-white'
+              ? 'bg-night text-white'
               : 'bg-emerald-600 text-white'
           }`}
         >

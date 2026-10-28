@@ -98,7 +98,7 @@ export const DesignSettings: React.FC = () => {
               className={`p-3 text-left rounded-xl border transition-all ${
                 design.template === t.id
                   ? 'border-brand bg-brand-50/50 shadow-soft ring-2 ring-brand/15'
-                  : 'border-line bg-white hover:border-slate-300 hover:bg-slate-50'
+                  : 'border-line bg-surface hover:border-slate-300 hover:bg-slate-50'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
@@ -142,7 +142,7 @@ export const DesignSettings: React.FC = () => {
 
           {/* Custom color picker */}
           <label
-            className="size-8 rounded-full border border-line flex items-center justify-center cursor-pointer hover:border-brand bg-white relative overflow-hidden"
+            className="size-8 rounded-full border border-line flex items-center justify-center cursor-pointer hover:border-brand bg-surface relative overflow-hidden"
             title="Custom Accent Color"
           >
             <input
@@ -278,7 +278,7 @@ export const DesignSettings: React.FC = () => {
                 className={`p-2.5 text-left rounded-lg border transition-all ${
                   layout.pageSize === p.id
                     ? 'border-brand bg-brand-50/50 shadow-soft ring-1 ring-brand/30'
-                    : 'border-line bg-white hover:bg-slate-50'
+                    : 'border-line bg-surface hover:bg-slate-50'
                 }`}
               >
                 <div className="flex justify-between items-center">
@@ -321,7 +321,7 @@ export const DesignSettings: React.FC = () => {
                 onClick={() => handleMarginPreset(m)}
                 className={`flex-1 py-1 text-[11px] font-medium rounded-md capitalize transition-all ${
                   layout.marginPreset === m
-                    ? 'bg-white text-brand shadow-soft font-semibold'
+                    ? 'bg-surface text-brand shadow-soft font-semibold'
                     : 'text-muted hover:text-ink'
                 }`}
               >
@@ -360,7 +360,7 @@ export const DesignSettings: React.FC = () => {
                 type="button"
                 onClick={() => updateLayout({ columns: 1 })}
                 className={`flex-1 py-1 text-xs font-medium rounded-md transition-all ${
-                  layout.columns === 1 ? 'bg-white text-brand shadow-soft font-semibold' : 'text-muted hover:text-ink'
+                  layout.columns === 1 ? 'bg-surface text-brand shadow-soft font-semibold' : 'text-muted hover:text-ink'
                 }`}
               >
                 Single Column
@@ -369,7 +369,7 @@ export const DesignSettings: React.FC = () => {
                 type="button"
                 onClick={() => updateLayout({ columns: 2 })}
                 className={`flex-1 py-1 text-xs font-medium rounded-md transition-all ${
-                  layout.columns === 2 ? 'bg-white text-brand shadow-soft font-semibold' : 'text-muted hover:text-ink'
+                  layout.columns === 2 ? 'bg-surface text-brand shadow-soft font-semibold' : 'text-muted hover:text-ink'
                 }`}
               >
                 Two Column
@@ -387,7 +387,7 @@ export const DesignSettings: React.FC = () => {
                   type="button"
                   onClick={() => updateLayout({ density: d })}
                   className={`flex-1 py-1 text-xs font-medium rounded-md capitalize transition-all ${
-                    layout.density === d ? 'bg-white text-brand shadow-soft font-semibold' : 'text-muted hover:text-ink'
+                    layout.density === d ? 'bg-surface text-brand shadow-soft font-semibold' : 'text-muted hover:text-ink'
                   }`}
                 >
                   {d}
@@ -406,7 +406,7 @@ export const DesignSettings: React.FC = () => {
                   type="button"
                   onClick={() => updateLayout({ headingAlignment: ha })}
                   className={`flex-1 py-1 text-xs font-medium rounded-md capitalize transition-all ${
-                    layout.headingAlignment === ha ? 'bg-white text-brand shadow-soft font-semibold' : 'text-muted hover:text-ink'
+                    layout.headingAlignment === ha ? 'bg-surface text-brand shadow-soft font-semibold' : 'text-muted hover:text-ink'
                   }`}
                 >
                   {ha}
@@ -425,7 +425,7 @@ export const DesignSettings: React.FC = () => {
                   type="button"
                   onClick={() => updateLayout({ bodyAlignment: ba })}
                   className={`flex-1 py-1 text-xs font-medium rounded-md capitalize transition-all ${
-                    layout.bodyAlignment === ba ? 'bg-white text-brand shadow-soft font-semibold' : 'text-muted hover:text-ink'
+                    layout.bodyAlignment === ba ? 'bg-surface text-brand shadow-soft font-semibold' : 'text-muted hover:text-ink'
                   }`}
                 >
                   {ba}

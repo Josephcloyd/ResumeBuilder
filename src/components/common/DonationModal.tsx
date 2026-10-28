@@ -24,7 +24,7 @@ export const DonationModal: React.FC<DonationModalProps> = ({ open, onClose }) =
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-night/60 p-3 sm:p-4 backdrop-blur-xs animate-fade-in"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
@@ -35,16 +35,16 @@ export const DonationModal: React.FC<DonationModalProps> = ({ open, onClose }) =
         role="dialog"
         aria-modal="true"
         aria-labelledby="donation-title"
-        className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-pop animate-pop-in"
+        className="max-h-[92dvh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-200 bg-surface shadow-pop animate-pop-in"
       >
-        <div className="relative overflow-hidden bg-gradient-to-br from-brand-600 to-brand-800 px-6 pb-6 pt-7 text-white sm:px-8">
+        <div className="relative overflow-hidden bg-gradient-to-br from-brand-600 to-brand-800 px-5 pb-6 pt-7 text-white sm:px-8">
           <div className="absolute -right-10 -top-10 size-32 rounded-full bg-white/10" />
           <div className="absolute -bottom-12 -left-8 size-28 rounded-full bg-brand-300/10" />
           <button
             ref={closeButtonRef}
             type="button"
             onClick={onClose}
-            className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full text-brand-100 transition-colors hover:bg-white/15 hover:text-white"
+            className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full text-white/80 transition-colors hover:bg-white/15 hover:text-white"
             aria-label="Close donation window"
           >
             <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -58,11 +58,19 @@ export const DonationModal: React.FC<DonationModalProps> = ({ open, onClose }) =
                 <path d="M12 21s-7-4.35-9.33-8.24C.83 9.69 2.1 5.5 5.74 4.42 7.93 3.77 10.2 4.6 12 6.45c1.8-1.85 4.07-2.68 6.26-2.03 3.64 1.08 4.91 5.27 3.07 8.34C19 16.65 12 21 12 21Z"/>
               </svg>
             </div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-200">Support ResumeFlow</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/70">Support ResumeFlow</p>
             <h2 id="donation-title" className="mt-1 text-xl font-bold tracking-tight">Donate through GCash</h2>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-brand-100">
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/85">
               Choose any amount you’re comfortable with. Every contribution helps keep the resume builder available.
             </p>
+            <div className="mt-4 flex max-w-xl items-start gap-2.5 rounded-xl bg-white/12 px-3.5 py-3 text-sm leading-relaxed ring-1 ring-white/20">
+              <svg className="mt-0.5 size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M12 18s-3-1.8-3-3.8a1.6 1.6 0 0 1 3-.8 1.6 1.6 0 0 1 3 .8c0 2-3 3.8-3 3.8Z"/>
+              </svg>
+              <p>
+                <strong className="font-semibold">50% of every donation</strong> goes to helping homeless people in Cebu City.
+              </p>
+            </div>
           </div>
         </div>
 

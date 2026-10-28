@@ -82,7 +82,7 @@ export const PersonalInfoEditor: React.FC = () => {
                   className={`px-2 py-0.5 text-[11px] rounded font-medium capitalize transition-all ${
                     personal.photoShape === shape
                       ? 'bg-brand text-white shadow-soft'
-                      : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+                      : 'bg-surface text-slate-600 border border-slate-200 hover:bg-slate-100'
                   }`}
                 >
                   {shape === 'none' ? 'No Image' : shape}
@@ -128,7 +128,7 @@ export const PersonalInfoEditor: React.FC = () => {
                     className={`px-2 py-0.5 text-[10px] rounded-md border transition-colors ${
                       clampPhotoSize(personal.photoSize) === preset.value
                         ? 'border-brand bg-brand-50 text-brand font-semibold'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+                        : 'border-slate-200 bg-surface text-slate-600 hover:bg-slate-100'
                     }`}
                   >
                     {preset.label}

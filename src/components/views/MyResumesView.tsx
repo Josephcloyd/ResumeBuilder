@@ -194,7 +194,7 @@ export const MyResumesView: React.FC = () => {
 
       {/* Resume Cards Grid */}
       {filtered.length === 0 ? (
-        <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-white shadow-soft">
+        <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-surface shadow-soft">
           <div className="size-14 rounded-full bg-brand-50 text-brand flex items-center justify-center mx-auto mb-3">
             <svg className="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
@@ -223,7 +223,7 @@ export const MyResumesView: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className={`card bg-white overflow-hidden transition-all duration-200 flex flex-col justify-between hover:shadow-card hover:border-slate-300 ${
+                className={`card bg-surface overflow-hidden transition-all duration-200 flex flex-col justify-between hover:shadow-card hover:border-slate-300 ${
                   isCurrent ? 'ring-2 ring-brand/40 border-brand' : ''
                 }`}
               >
@@ -366,7 +366,7 @@ export const MyResumesView: React.FC = () => {
         </div>
       )}
 
-      <section className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-soft sm:flex-row sm:items-center sm:justify-between">
+      <section className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-surface p-5 shadow-soft sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
             <svg className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -380,7 +380,7 @@ export const MyResumesView: React.FC = () => {
             </p>
           </div>
         </div>
-        <button type="button" onClick={handleClearLocalData} className="btn btn-sm shrink-0 border border-red-200 bg-white text-red-600 hover:bg-red-50">
+        <button type="button" onClick={handleClearLocalData} className="btn btn-sm shrink-0 border border-red-200 bg-surface text-red-600 hover:bg-red-50">
           Delete my local data
         </button>
       </section>

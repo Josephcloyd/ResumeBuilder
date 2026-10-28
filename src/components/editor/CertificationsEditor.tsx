@@ -101,7 +101,7 @@ export const CertificationsEditor: React.FC<CertificationsEditorProps> = ({ sect
                   onClick={() => updateSection(sectionId, (s) => { (s as CertificationsSection).galleryColumns = col; })}
                   className={`flex-1 py-1 text-xs font-medium rounded-md transition-all ${
                     section.galleryColumns === col
-                      ? 'bg-white text-brand shadow-soft font-semibold'
+                      ? 'bg-surface text-brand shadow-soft font-semibold'
                       : 'text-muted hover:text-ink'
                   }`}
                 >
@@ -129,7 +129,7 @@ export const CertificationsEditor: React.FC<CertificationsEditorProps> = ({ sect
           {items.map((item, idx) => {
             const isExpanded = expandedId === item.id || (items.length === 1 && expandedId === null);
             return (
-              <div key={item.id} className="border border-line rounded-xl bg-white overflow-hidden shadow-soft transition-all">
+              <div key={item.id} className="border border-line rounded-xl bg-surface overflow-hidden shadow-soft transition-all">
                 {/* Header row */}
                 <div
                   onClick={() => setExpandedId(isExpanded ? null : item.id)}

@@ -125,6 +125,8 @@ export const BugReportBubble: React.FC = () => {
         body: form,
       });
       const result = (await response.json().catch(() => ({}))) as { error?: string };
+      // The /api endpoint only exists on Vercel (not under `npm run dev`)
+      if (response.status === 404) throw new Error('Sending is only available on the live site. Use Copy instead.');
       if (!response.ok) throw new Error(result.error || 'The report could not be sent.');
 
       setSummary('');
@@ -147,7 +149,7 @@ export const BugReportBubble: React.FC = () => {
           id="bug-report-panel"
           role="dialog"
           aria-labelledby="bug-report-title"
-          className="absolute bottom-[4.5rem] right-0 max-h-[calc(100vh-7rem)] w-[calc(100vw-2rem)] max-w-sm overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-white shadow-pop animate-pop-in"
+          className="absolute bottom-[4.5rem] right-0 max-h-[calc(100dvh-7rem)] w-[calc(100vw-2rem)] max-w-sm overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-surface shadow-pop animate-pop-in"
         >
           <div className="flex items-start justify-between gap-4 border-b border-line bg-slate-50/80 px-5 py-4">
             <div className="flex items-center gap-3">
@@ -229,7 +231,7 @@ export const BugReportBubble: React.FC = () => {
                         setScreenshot(null);
                         setScreenshotPreview('');
                       }}
-                      className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-soft transition-colors hover:bg-slate-900"
+                      className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-night/80 text-white shadow-soft transition-colors hover:bg-night"
                       aria-label="Remove screenshot"
                     >
                       <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -266,7 +268,7 @@ export const BugReportBubble: React.FC = () => {
                       : 'border-slate-200 bg-slate-50/70 hover:border-brand-300 hover:bg-brand-50/50'
                   }`}
                 >
-                  <div className="mb-2 flex size-9 items-center justify-center rounded-lg bg-white text-brand shadow-soft">
+                  <div className="mb-2 flex size-9 items-center justify-center rounded-lg bg-surface text-brand shadow-soft">
                     <svg className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>
                     </svg>
@@ -334,8 +336,8 @@ export const BugReportBubble: React.FC = () => {
         aria-controls="bug-report-panel"
         className={`group flex h-13 items-center justify-center rounded-full border px-4 shadow-pop transition-all duration-200 active:scale-95 ${
           isOpen
-            ? 'border-slate-700 bg-slate-800 text-white hover:bg-slate-900'
-            : 'border-red-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-red-300 hover:text-red-600'
+            ? 'border-night bg-night/90 text-white hover:bg-night'
+            : 'border-red-200 bg-surface text-slate-700 hover:-translate-y-0.5 hover:border-red-300 hover:text-red-600'
         }`}
       >
         {isOpen ? (

@@ -60,7 +60,7 @@ export const SummaryEditor: React.FC<SummaryEditorProps> = ({ sectionId }) => {
                 onClick={() => handleAlignChange(a)}
                 className={`size-7 rounded flex items-center justify-center transition-all ${
                   section.align === a
-                    ? 'bg-white text-brand shadow-soft font-bold'
+                    ? 'bg-surface text-brand shadow-soft font-bold'
                     : 'text-muted hover:text-ink'
                 }`}
                 title={`Align ${a}`}

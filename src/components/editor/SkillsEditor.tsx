@@ -95,7 +95,7 @@ export const SkillsEditor: React.FC<SkillsEditorProps> = ({ sectionId }) => {
                 onClick={() => handleDisplayChange(d)}
                 className={`flex-1 py-1 text-xs font-medium rounded-md capitalize transition-all ${
                   section.display === d
-                    ? 'bg-white text-brand shadow-soft font-semibold'
+                    ? 'bg-surface text-brand shadow-soft font-semibold'
                     : 'text-muted hover:text-ink'
                 }`}
               >
@@ -120,7 +120,7 @@ export const SkillsEditor: React.FC<SkillsEditorProps> = ({ sectionId }) => {
       ) : (
         <div className="space-y-3">
           {groups.map((grp) => (
-            <div key={grp.id} className="border border-line rounded-xl bg-white p-3.5 shadow-soft space-y-2.5">
+            <div key={grp.id} className="border border-line rounded-xl bg-surface p-3.5 shadow-soft space-y-2.5">
               <div className="flex items-center justify-between gap-2">
                 <input
                   type="text"

@@ -47,10 +47,10 @@ export const ExportModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-      <div className="card w-full max-w-md bg-white shadow-pop overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-night/60 backdrop-blur-xs animate-fade-in">
+      <div className="card w-full max-w-md bg-surface shadow-pop overflow-y-auto max-h-[90dvh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-line bg-gradient-to-r from-brand-50/50 to-white">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-line bg-gradient-to-r from-brand-50/50 to-surface">
           <div className="flex items-center gap-2.5">
             <div className="size-9 rounded-lg bg-brand-100 text-brand flex items-center justify-center font-bold">
               <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -75,7 +75,7 @@ export const ExportModal: React.FC = () => {
           <div className="bg-slate-50 border border-line rounded-lg p-3.5 space-y-2">
             <div className="flex justify-between items-center text-xs">
               <span className="text-muted">Page Size:</span>
-              <span className="font-medium text-ink bg-white px-2 py-0.5 rounded border border-slate-200">
+              <span className="font-medium text-ink bg-surface px-2 py-0.5 rounded border border-slate-200">
                 {pageSizeDef.label} ({pageSizeDef.dims})
               </span>
             </div>

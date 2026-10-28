@@ -3,6 +3,7 @@ import { create } from 'zustand';
 export type View = 'builder' | 'resumes' | 'templates';
 export type EditorTab = 'content' | 'design' | 'score';
 export type ZoomMode = 'custom' | 'fitPage' | 'fitWidth';
+export type Theme = 'light' | 'dark';
 
 export interface Toast {
   id: number;
@@ -24,6 +25,7 @@ interface UIState {
   mobilePane: 'editor' | 'preview';
   zoom: number;
   zoomMode: ZoomMode;
+  theme: Theme;
   exportOpen: boolean;
   saveAsOpen: boolean;
   newOpen: boolean;
@@ -37,6 +39,7 @@ interface UIState {
   setMobilePane: (p: 'editor' | 'preview') => void;
   setZoom: (z: number, mode?: ZoomMode) => void;
   setZoomMode: (m: ZoomMode) => void;
+  toggleTheme: () => void;
   setExportOpen: (v: boolean) => void;
   setSaveAsOpen: (v: boolean) => void;
   setNewOpen: (v: boolean) => void;
@@ -49,6 +52,9 @@ interface UIState {
 
 const savedZoom = Number(localStorage.getItem('resumeflow:zoom')) || 0;
 const savedMode = (localStorage.getItem('resumeflow:zoomMode') as ZoomMode) || 'fitWidth';
+// public/theme-init.js sets data-theme before first paint; mirror it here
+const initialTheme: Theme =
+  document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
 
 export const useUI = create<UIState>((set, get) => ({
   view: 'resumes',
@@ -56,6 +62,7 @@ export const useUI = create<UIState>((set, get) => ({
   mobilePane: 'editor',
   zoom: savedZoom || 80,
   zoomMode: savedMode,
+  theme: initialTheme,
   exportOpen: false,
   saveAsOpen: false,
   newOpen: false,
@@ -75,6 +82,17 @@ export const useUI = create<UIState>((set, get) => ({
   setZoomMode: (zoomMode) => {
     localStorage.setItem('resumeflow:zoomMode', zoomMode);
     set({ zoomMode });
+  },
+  toggleTheme: () => {
+    const theme: Theme = get().theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#131B2B' : '#2F5446');
+    try {
+      localStorage.setItem('resumeflow:theme', theme);
+    } catch {
+      // storage unavailable (private mode) — theme still applies for this session
+    }
+    set({ theme });
   },
   setExportOpen: (exportOpen) => set({ exportOpen }),
   setSaveAsOpen: (saveAsOpen) => set({ saveAsOpen }),

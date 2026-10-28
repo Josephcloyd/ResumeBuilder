@@ -1,22 +1,36 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useResumeStore } from '../../store/resumeStore';
 import { useUI } from '../../store/uiStore';
 import { ZOOM_PRESETS } from '../../lib/constants';
 import { pageGeometry } from '../../lib/units';
 import { ResumeDoc } from '../resume/ResumeDoc';
 
+/** Horizontal padding of the scroll canvas (p-3 on phones, sm:p-6 otherwise). */
+const canvasPaddingX = () => (window.matchMedia('(min-width: 640px)').matches ? 48 : 24);
+
 export const ResumePreview: React.FC = () => {
   const { resume, setPageCount } = useResumeStore();
   const { zoom, setZoom, zoomMode, setZoomMode } = useUI();
   const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState(0);
 
   const geom = pageGeometry(resume);
+
+  // Track the unscaled document height (changes with page count) to size the scaled box
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => setContentHeight(el.offsetHeight));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Auto calculate Fit Width and Fit Page
   useEffect(() => {
     const handleFit = () => {
       if (!containerRef.current) return;
-      const cWidth = containerRef.current.clientWidth - 48; // padding
+      const cWidth = containerRef.current.clientWidth - canvasPaddingX(); // padding
       const cHeight = containerRef.current.clientHeight - 80;
 
       if (zoomMode === 'fitWidth') {
@@ -50,9 +64,9 @@ export const ResumePreview: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-slate-100/80 relative overflow-hidden select-none">
       {/* Zoom and Preview Toolbar */}
-      <div className="min-h-14 border-b border-line bg-white/90 backdrop-blur-xs px-5 flex items-center justify-between gap-4 z-20 shadow-xs">
+      <div className="min-h-14 border-b border-line bg-surface/90 backdrop-blur-xs px-3 sm:px-5 flex items-center justify-between gap-2 sm:gap-4 z-20 shadow-xs">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-slate-800 tracking-tight">
+          <span className="hidden sm:inline text-sm font-semibold text-slate-800 tracking-tight">
             Live Preview
           </span>
           <span className="hidden xl:inline text-[11px] text-muted bg-slate-100 px-2 py-0.5 rounded border border-slate-200 whitespace-nowrap">
@@ -81,7 +95,7 @@ export const ResumePreview: React.FC = () => {
                 setZoom(parseInt(e.target.value, 10), 'custom');
               }
             }}
-            className="input h-7 text-xs font-medium px-1.5 py-0 w-16 text-center"
+            className="input h-7 text-xs font-medium pl-2 pr-6 py-0 w-20 text-center"
           >
             {!ZOOM_PRESETS.includes(zoom) && (
               <option value="">{zoom}%</option>
@@ -112,7 +126,7 @@ export const ResumePreview: React.FC = () => {
             onClick={() => {
               setZoomMode('fitWidth');
               if (containerRef.current) {
-                const cWidth = containerRef.current.clientWidth - 48;
+                const cWidth = containerRef.current.clientWidth - canvasPaddingX();
                 setZoom(Math.round((cWidth / geom.width) * 100), 'fitWidth');
               }
             }}
@@ -127,7 +141,7 @@ export const ResumePreview: React.FC = () => {
             onClick={() => {
               setZoomMode('fitPage');
               if (containerRef.current) {
-                const cWidth = containerRef.current.clientWidth - 48;
+                const cWidth = containerRef.current.clientWidth - canvasPaddingX();
                 const cHeight = containerRef.current.clientHeight - 80;
                 setZoom(Math.round(Math.min(cWidth / geom.width, cHeight / geom.height) * 100), 'fitPage');
               }
@@ -144,19 +158,31 @@ export const ResumePreview: React.FC = () => {
       {/* Viewport Scroll Canvas */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-auto p-6 flex justify-center items-start scroll-thin cursor-default"
+        className="flex-1 overflow-auto p-3 sm:p-6 flex items-start scroll-thin cursor-default"
       >
+        {/* Occupies the *scaled* size so the panel can shrink and Fit Width measures the real space;
+            mx-auto centres it without clipping the left edge when zoomed past the panel width. */}
         <div
-          className="transition-transform origin-top select-text"
+          className="rf-scale-box mx-auto shrink-0"
           style={{
-            transform: `scale(${scale})`,
+            width: geom.width * scale,
+            height: contentHeight ? contentHeight * scale : undefined,
             marginBottom: '4rem',
           }}
         >
-          <ResumeDoc
-            resume={resume}
-            onPageCountChange={(count) => setPageCount(count)}
-          />
+          <div
+            ref={contentRef}
+            className="transition-transform origin-top-left select-text"
+            style={{
+              width: geom.width,
+              transform: `scale(${scale})`,
+            }}
+          >
+            <ResumeDoc
+              resume={resume}
+              onPageCountChange={(count) => setPageCount(count)}
+            />
+          </div>
         </div>
       </div>
     </div>

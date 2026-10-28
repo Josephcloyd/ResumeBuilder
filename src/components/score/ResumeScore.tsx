@@ -159,7 +159,7 @@ export const ResumeScore: React.FC = () => {
       {/* Checklist */}
       <div className="space-y-2">
         <h5 className="text-xs font-semibold text-slate-700 uppercase tracking-wider px-1">Content Evaluation</h5>
-        <div className="bg-white border border-line rounded-xl divide-y divide-line overflow-hidden shadow-soft">
+        <div className="bg-surface border border-line rounded-xl divide-y divide-line overflow-hidden shadow-soft">
           {checks.map((chk) => (
             <div key={chk.id} className="p-3 flex items-start justify-between gap-3 text-sm">
               <div className="flex items-center gap-2.5">

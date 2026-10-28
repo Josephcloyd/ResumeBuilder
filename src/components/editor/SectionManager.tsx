@@ -60,7 +60,7 @@ export const SectionManager: React.FC = () => {
           </button>
 
           {showAddMenu && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-line rounded-xl shadow-pop p-1.5 z-30 max-h-80 overflow-y-auto divide-y divide-slate-100 animate-pop-in">
+            <div className="absolute right-0 top-full mt-2 w-56 bg-surface border border-line rounded-xl shadow-pop p-1.5 z-30 max-h-80 overflow-y-auto divide-y divide-slate-100 animate-pop-in">
               <div className="py-1">
                 <button
                   type="button"
@@ -98,14 +98,14 @@ export const SectionManager: React.FC = () => {
       </div>
 
       {/* Sections List with Reorder Controls */}
-      <div className="space-y-1.5 bg-white border border-line rounded-xl p-2 shadow-soft">
+      <div className="space-y-1.5 bg-surface border border-line rounded-xl p-2 shadow-soft">
         {/* Personal info is pinned at top */}
         <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <span className="size-2 rounded-full bg-brand" />
             <span className="text-xs font-semibold text-ink">Personal Information (Header)</span>
           </div>
-          <span className="text-[11px] font-medium text-muted bg-white px-2 py-0.5 rounded border border-slate-200">
+          <span className="text-[11px] font-medium text-muted bg-surface px-2 py-0.5 rounded border border-slate-200">
             Pinned
           </span>
         </div>
@@ -117,7 +117,7 @@ export const SectionManager: React.FC = () => {
             <div
               key={sec.id}
               className={`p-2.5 rounded-lg border transition-all flex items-center justify-between gap-3 ${
-                sec.visible ? 'bg-white border-line shadow-xs' : 'bg-slate-50 border-dashed border-slate-300 opacity-60'
+                sec.visible ? 'bg-surface border-line shadow-xs' : 'bg-slate-50 border-dashed border-slate-300 opacity-60'
               }`}
             >
               <div className="flex items-center gap-2 min-w-0">

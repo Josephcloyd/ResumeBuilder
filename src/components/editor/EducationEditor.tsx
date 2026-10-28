@@ -84,7 +84,7 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ sectionId }) =
           {items.map((item, idx) => {
             const isExpanded = expandedId === item.id || (items.length === 1 && expandedId === null);
             return (
-              <div key={item.id} className="border border-line rounded-xl bg-white overflow-hidden shadow-soft transition-all">
+              <div key={item.id} className="border border-line rounded-xl bg-surface overflow-hidden shadow-soft transition-all">
                 {/* Header row */}
                 <div
                   onClick={() => setExpandedId(isExpanded ? null : item.id)}

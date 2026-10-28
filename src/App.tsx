@@ -61,7 +61,7 @@ export const App: React.FC = () => {
 
   if (!loaded) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-slate-50 gap-3">
+      <div className="h-dvh w-full flex flex-col items-center justify-center bg-slate-50 gap-3">
         <BrandMark className="size-14 animate-pulse" />
         <p className="text-xs font-semibold text-slate-600 tracking-wide">
           Loading ResumeFlow...
@@ -72,7 +72,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden bg-slate-50 font-sans">
+    <div className="h-dvh w-full flex flex-col overflow-hidden bg-slate-50 font-sans">
       {/* Top Header */}
       <Header />
 
@@ -133,7 +133,7 @@ export const App: React.FC = () => {
 
             {/* Right Panel: Live Preview */}
             <div
-              className={`h-full flex-1 ${
+              className={`h-full flex-1 min-w-0 ${
                 mobilePane === 'preview' ? 'flex' : 'hidden lg:flex'
               } flex-col`}
             >

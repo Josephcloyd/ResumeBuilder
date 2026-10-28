@@ -25,7 +25,7 @@ export const ResumeEditor: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-line overflow-hidden">
+    <div className="flex flex-col h-full bg-surface border-r border-line overflow-hidden">
       {/* Tab Bar */}
       <div className="p-3 border-b border-line bg-slate-50/80 select-none">
         <div className="grid grid-cols-3 gap-1 rounded-xl border border-slate-200 bg-slate-100/80 p-1">
@@ -35,8 +35,8 @@ export const ResumeEditor: React.FC = () => {
           aria-selected={editorTab === 'content'}
           className={`min-h-10 rounded-lg px-2 text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
             editorTab === 'content'
-              ? 'bg-white text-brand shadow-soft'
-              : 'text-muted hover:bg-white/60 hover:text-ink'
+              ? 'bg-surface text-brand shadow-soft'
+              : 'text-muted hover:bg-surface/60 hover:text-ink'
           }`}
         >
           <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -52,8 +52,8 @@ export const ResumeEditor: React.FC = () => {
           aria-selected={editorTab === 'design'}
           className={`min-h-10 rounded-lg px-2 text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
             editorTab === 'design'
-              ? 'bg-white text-brand shadow-soft'
-              : 'text-muted hover:bg-white/60 hover:text-ink'
+              ? 'bg-surface text-brand shadow-soft'
+              : 'text-muted hover:bg-surface/60 hover:text-ink'
           }`}
         >
           <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -69,8 +69,8 @@ export const ResumeEditor: React.FC = () => {
           aria-selected={editorTab === 'score'}
           className={`min-h-10 rounded-lg px-2 text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
             editorTab === 'score'
-              ? 'bg-white text-brand shadow-soft'
-              : 'text-muted hover:bg-white/60 hover:text-ink'
+              ? 'bg-surface text-brand shadow-soft'
+              : 'text-muted hover:bg-surface/60 hover:text-ink'
           }`}
         >
           <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -89,7 +89,7 @@ export const ResumeEditor: React.FC = () => {
         {editorTab === 'content' && (
           <div className="space-y-4">
             {/* Section 1: Personal Info (Always first) */}
-            <div className="border border-line rounded-xl bg-white shadow-soft overflow-hidden transition-all">
+            <div className="border border-line rounded-xl bg-surface shadow-soft overflow-hidden transition-all">
               <button
                 type="button"
                 onClick={() => toggleSection('personal')}
@@ -131,7 +131,7 @@ export const ResumeEditor: React.FC = () => {
               return (
                 <div
                   key={sec.id}
-                  className={`border border-line rounded-xl bg-white shadow-soft overflow-hidden transition-all ${
+                  className={`border border-line rounded-xl bg-surface shadow-soft overflow-hidden transition-all ${
                     !sec.visible ? 'opacity-60' : ''
                   }`}
                 >

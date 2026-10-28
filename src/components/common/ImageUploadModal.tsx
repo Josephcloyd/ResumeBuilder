@@ -101,8 +101,8 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-      <div className="card w-full max-w-lg bg-white shadow-pop overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-night/60 backdrop-blur-xs animate-fade-in">
+      <div className="card w-full max-w-lg bg-surface shadow-pop overflow-hidden flex flex-col max-h-[90dvh]">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-line">
           <h3 className="font-semibold text-ink text-base flex items-center gap-2">
@@ -158,7 +158,7 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
             <div className="space-y-4">
               {/* Preview Crop Viewport */}
               <div
-                className="relative w-full h-64 bg-slate-900 rounded-xl overflow-hidden cursor-grab active:cursor-grabbing select-none flex items-center justify-center"
+                className="relative w-full h-64 bg-night rounded-xl overflow-hidden cursor-grab active:cursor-grabbing select-none flex items-center justify-center"
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -176,7 +176,7 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                   }}
                 />
                 <div className="absolute inset-0 pointer-events-none border-2 border-white/40 shadow-[0_0_0_9999px_rgba(15,23,42,0.6)]" style={{ margin: '16px' }} />
-                <span className="absolute bottom-2 right-2 text-[10px] text-white/80 bg-slate-900/70 px-2 py-0.5 rounded backdrop-blur-xs">
+                <span className="absolute bottom-2 right-2 text-[10px] text-white/80 bg-night/70 px-2 py-0.5 rounded backdrop-blur-xs">
                   Drag to reposition
                 </span>
               </div>
@@ -212,7 +212,7 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
                         key={opt.label}
                         type="button"
                         onClick={() => setAspect(opt.val)}
-                        className={`px-2.5 py-1 text-xs rounded-md font-medium transition-all ${aspect === opt.val ? 'bg-brand text-white shadow-soft' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
+                        className={`px-2.5 py-1 text-xs rounded-md font-medium transition-all ${aspect === opt.val ? 'bg-brand text-white shadow-soft' : 'bg-surface text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
                       >
                         {opt.label}
                       </button>
