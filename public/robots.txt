@@ -1,0 +1,21 @@
+# ResumeFlow by GetLaunch PH — all search engines and AI assistants are welcome.
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# AI search and answer engines (listed explicitly so the intent is clear)
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+Sitemap: https://resumeflow.getlaunchph.com/sitemap.xml

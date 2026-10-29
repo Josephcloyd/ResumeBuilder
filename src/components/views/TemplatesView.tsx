@@ -18,7 +18,7 @@ export const TemplatesView: React.FC = () => {
     <div className="max-w-6xl mx-auto p-4 sm:p-8 space-y-6 animate-fade-in">
       {/* Header */}
       <div className="border-b border-line pb-6">
-        <h2 className="text-2xl font-bold text-ink tracking-tight">Resume Templates</h2>
+        <h1 className="text-2xl font-bold text-ink tracking-tight">Resume Templates</h1>
         <p className="text-sm text-muted mt-1 max-w-2xl">
           Choose a professionally crafted design. Switching templates preserves all of your entered information, sections, and images.
         </p>

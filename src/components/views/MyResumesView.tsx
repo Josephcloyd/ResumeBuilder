@@ -135,7 +135,7 @@ export const MyResumesView: React.FC = () => {
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-6">
         <div>
-          <h2 className="text-2xl font-bold text-ink tracking-tight">My Resumes</h2>
+          <h1 className="text-2xl font-bold text-ink tracking-tight">My Resumes</h1>
           <p className="text-sm text-muted mt-1">
             Start with a sample or create and manage your own resumes
           </p>
@@ -384,6 +384,16 @@ export const MyResumesView: React.FC = () => {
           Delete my local data
         </button>
       </section>
+
+      <footer className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 pb-16 text-xs text-muted">
+        <span>
+          ResumeFlow is a free resume builder by{' '}
+          <a href="https://www.getlaunchph.com/" rel="noopener" className="font-medium text-ink underline-offset-2 hover:underline">GetLaunch PH</a>.
+        </span>
+        <a href="/about" className="font-semibold text-brand underline-offset-2 hover:underline">
+          About ResumeFlow &amp; FAQ →
+        </a>
+      </footer>
     </div>
   );
 };

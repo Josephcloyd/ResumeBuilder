@@ -1,0 +1,20 @@
+# ResumeFlow
+
+> ResumeFlow is a free online resume builder and CV maker by GetLaunch PH, made for Filipino job seekers. Users build a resume in the browser with a live preview and download it as a PDF in A4, Letter, Short Bond (8.5 × 11 in), Long Bond (8.5 × 13 in) or Legal size. No sign-up, no watermark, and resumes are stored only in the user's browser.
+
+## Key facts
+
+- Price: free (no paid plan)
+- Account: none required
+- URL: https://resumeflow.getlaunchph.com/
+- Made by: GetLaunch PH (https://www.getlaunchph.com/)
+- Templates (8): Simple ATS, Fresh Graduate, Corporate, Modern Professional, Two Column Modern, Blue Minimal, Developer, Academic
+- PDF paper sizes: A4, Letter, Short Bond, Long Bond, Legal
+- Works on: any modern browser, including phones
+- Privacy: resume content stays on the user's device; it can be exported and imported as JSON
+- Other features: live preview, completeness score with tips, 12 fonts, accent colors, one- or two-column layouts, profile photo, dark mode
+
+## Pages
+
+- [ResumeFlow app](https://resumeflow.getlaunchph.com/): the resume builder itself
+- [About & FAQ](https://resumeflow.getlaunchph.com/about): features, how to make a resume, templates, paper sizes, privacy and frequently asked questions

@@ -130,6 +130,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
+        {view === 'builder' && <h1 className="sr-only">ResumeFlow resume builder</h1>}
         {view === 'builder' && (
           <div
             ref={workspaceRef}
